@@ -1,0 +1,1463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>IRT-in-CRI Study | AI-Powered Infrared Thermography</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --navy:#0B1F3A;--navy2:#122740;--navy3:#1B3A5C;
+  --gold:#C5963A;--gold2:#E4B96A;
+  --cream:#F7F3EE;--cream2:#EDE8E0;--white:#FFFFFF;
+  --muted:#6B7280;--text:#1C2733;
+  --green:#1A6B45;--greenl:#D1F0E2;
+  --amber:#7B5E00;--amberl:#FFF3CC;
+  --border:rgba(11,31,58,0.12);
+  --shadow:0 4px 24px rgba(11,31,58,0.10);
+  --shadow2:0 12px 48px rgba(11,31,58,0.16);
+  --r:8px;--tr:all 0.28s cubic-bezier(.4,0,.2,1);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);line-height:1.7;overflow-x:hidden}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--cream2)}::-webkit-scrollbar-thumb{background:var(--navy3);border-radius:3px}
+h1,h2,h3,h4,h5{font-family:'Cormorant Garamond',serif;font-weight:600;line-height:1.2}
+h1{font-size:clamp(2.6rem,5vw,4.8rem);letter-spacing:-0.02em}
+h2{font-size:clamp(1.8rem,3.5vw,3rem)}
+h3{font-size:clamp(1.3rem,2.5vw,1.9rem)}
+p{font-size:0.975rem;color:#344054;line-height:1.75}
+a{color:inherit;text-decoration:none}
+.container{max-width:1200px;margin:0 auto;padding:0 2rem}
+.section{padding:5.5rem 0}
+.section--dark{background:var(--navy);color:var(--white)}
+.section--mid{background:var(--navy2);color:var(--white)}
+.section--alt{background:var(--cream2)}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(11,31,58,0.97);backdrop-filter:blur(12px);border-bottom:1px solid rgba(197,150,58,0.25)}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;max-width:1200px;margin:0 auto;padding:0 1.5rem;height:62px}
+.nav-brand{display:flex;align-items:center;gap:10px}
+.nav-logo{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold2));display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-weight:700;font-size:0.85rem;color:var(--navy);flex-shrink:0}
+.nav-brand span{font-family:'DM Mono',monospace;font-size:0.75rem;color:var(--gold2);letter-spacing:0.08em;text-transform:uppercase}
+.nav-links{display:flex;align-items:center;gap:0.1rem;flex-wrap:wrap}
+.nav-links a{font-size:0.72rem;letter-spacing:0.05em;text-transform:uppercase;color:rgba(255,255,255,0.65);padding:5px 9px;border-radius:4px;transition:var(--tr);font-weight:500}
+.nav-links a:hover,.nav-links a.active{color:var(--gold2);background:rgba(197,150,58,0.12)}
+.nav-toggle{display:none;background:none;border:none;cursor:pointer;padding:8px}
+.nav-toggle span{display:block;width:22px;height:2px;background:var(--white);margin:5px 0;transition:var(--tr)}
+
+/* ── PI BANNER ── */
+.pi-banner{background:linear-gradient(90deg,var(--navy) 0%,var(--navy3) 100%);border-bottom:2px solid var(--gold);padding:10px 0;margin-top:62px}
+.pi-banner-inner{max-width:1200px;margin:0 auto;padding:0 2rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+.pi-label{font-family:'DM Mono',monospace;font-size:0.68rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold2);flex-shrink:0}
+.pi-name{font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--white);font-weight:600}
+.pi-sep{color:rgba(255,255,255,0.3);margin:0 0.5rem}
+.pi-title{font-size:0.8rem;color:rgba(255,255,255,0.6)}
+
+/* ── HERO ── */
+.hero{min-height:92vh;background:var(--navy);display:flex;align-items:center;position:relative;overflow:hidden;padding-top:0}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 70% 40%,rgba(197,150,58,0.08) 0%,transparent 60%),linear-gradient(160deg,#0B1F3A 0%,#0D2545 50%,#0B1F3A 100%)}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(197,150,58,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(197,150,58,0.04) 1px,transparent 1px);background-size:60px 60px}
+.hero-content{position:relative;z-index:2;padding:4rem 0 3rem}
+.hero-tag{display:inline-flex;align-items:center;gap:8px;font-family:'DM Mono',monospace;font-size:0.7rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--gold2);border:1px solid rgba(197,150,58,0.35);padding:5px 13px;border-radius:100px;margin-bottom:1.5rem;background:rgba(197,150,58,0.06)}
+.hero-tag::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--gold2);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+.hero h1{color:var(--white);margin-bottom:1rem;max-width:820px}
+.hero h1 em{color:var(--gold2);font-style:italic}
+.hero-sub{font-size:1rem;color:rgba(255,255,255,0.65);max-width:580px;margin-bottom:2rem;font-weight:300}
+.hero-meta{display:flex;flex-wrap:wrap;gap:1.25rem;margin-bottom:2.5rem}
+.hero-meta-item{display:flex;align-items:center;gap:7px;font-size:0.79rem;color:rgba(255,255,255,0.55);font-family:'DM Mono',monospace}
+.hero-meta-item strong{color:var(--gold2);font-weight:500}
+.hero-ctas{display:flex;flex-wrap:wrap;gap:1rem}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 26px;border-radius:6px;font-size:0.84rem;font-weight:600;letter-spacing:0.04em;cursor:pointer;transition:var(--tr);border:2px solid transparent;font-family:'DM Sans',sans-serif}
+.btn-primary{background:var(--gold);color:var(--navy);border-color:var(--gold)}
+.btn-primary:hover{background:var(--gold2);transform:translateY(-2px);box-shadow:0 8px 24px rgba(197,150,58,0.35)}
+.btn-outline{background:transparent;color:var(--white);border-color:rgba(255,255,255,0.3)}
+.btn-outline:hover{border-color:var(--white);background:rgba(255,255,255,0.08);transform:translateY(-2px)}
+.hero-stats{position:absolute;right:0;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:1px;background:rgba(197,150,58,0.12);border-left:1px solid rgba(197,150,58,0.25);padding:1.5rem 2rem;border-radius:0 0 0 var(--r)}
+.stat{text-align:center;padding:0.8rem 0}
+.stat-num{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:700;color:var(--gold2);line-height:1}
+.stat-label{font-size:0.68rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.45);margin-top:3px}
+.stat-div{height:1px;background:rgba(197,150,58,0.2)}
+
+/* ── SECTION HEADERS ── */
+.sec-header{margin-bottom:3rem}
+.sec-tag{display:inline-block;font-family:'DM Mono',monospace;font-size:0.68rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--gold);padding:4px 12px;border-radius:100px;border:1px solid rgba(197,150,58,0.35);margin-bottom:0.8rem;background:rgba(197,150,58,0.06)}
+.section--dark .sec-tag,.section--mid .sec-tag{color:var(--gold2);background:rgba(197,150,58,0.1)}
+.sec-header h2{margin-bottom:0.6rem}
+.sec-header p{max-width:580px;color:var(--muted);font-size:0.97rem}
+.section--dark .sec-header p,.section--mid .sec-header p{color:rgba(255,255,255,0.6)}
+.sec-line{width:56px;height:3px;background:var(--gold);margin-top:0.8rem;border-radius:2px}
+
+/* ── CARDS ── */
+.value-card,.inst-card,.researcher-card,.deliv-card,.pub-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);transition:var(--tr)}
+.value-card:hover,.inst-card:hover,.researcher-card:hover,.deliv-card:hover,.pub-card:hover{box-shadow:var(--shadow2);transform:translateY(-4px)}
+
+/* ── INTRO ── */
+.intro-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:start}
+.intro-text p{margin-bottom:0.9rem}
+.intro-highlight{background:var(--navy);color:var(--white);border-radius:var(--r);padding:1.75rem;border-left:4px solid var(--gold);margin-top:1.25rem}
+.intro-highlight p{color:rgba(255,255,255,0.8);font-size:0.92rem;font-style:italic}
+.intro-highlight cite{display:block;margin-top:0.6rem;font-size:0.76rem;color:var(--gold2);font-family:'DM Mono',monospace}
+.values-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:0.5rem}
+.value-card{padding:1.4rem;border-radius:var(--r)}
+.value-icon{width:38px;height:38px;border-radius:8px;background:linear-gradient(135deg,var(--navy),var(--navy3));display:flex;align-items:center;justify-content:center;font-size:1.1rem;margin-bottom:0.65rem}
+.value-card h5{font-family:'Cormorant Garamond',serif;margin-bottom:0.35rem;font-size:1rem;font-weight:600}
+.value-card p{font-size:0.8rem;color:var(--muted);line-height:1.55}
+
+/* ── VISION 2030 ── */
+.vision-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;margin-top:1rem}
+.vision-card{background:rgba(255,255,255,0.06);border:1px solid rgba(197,150,58,0.2);border-radius:var(--r);padding:1.5rem;transition:var(--tr)}
+.vision-card:hover{background:rgba(197,150,58,0.08);border-color:var(--gold)}
+.vision-icon{font-size:1.8rem;margin-bottom:0.75rem}
+.vision-card h4{font-family:'Cormorant Garamond',serif;color:var(--gold2);font-size:1.05rem;margin-bottom:0.4rem}
+.vision-card p{font-size:0.82rem;color:rgba(255,255,255,0.65);line-height:1.6}
+.vision-pillar{display:inline-block;font-size:0.68rem;letter-spacing:0.1em;text-transform:uppercase;padding:3px 8px;border-radius:100px;background:rgba(197,150,58,0.15);color:var(--gold2);margin-bottom:0.5rem;font-family:'DM Mono',monospace}
+
+/* ── PROPOSAL ── */
+.proposal-wrap{display:grid;grid-template-columns:270px 1fr;gap:3rem;align-items:start}
+.proposal-nav{position:sticky;top:84px;background:var(--navy);border-radius:var(--r);padding:1.4rem}
+.proposal-nav h4{font-family:'Cormorant Garamond',serif;font-size:1rem;color:var(--gold2);margin-bottom:0.9rem;padding-bottom:0.65rem;border-bottom:1px solid rgba(255,255,255,0.1)}
+.proposal-nav a{display:flex;align-items:center;gap:7px;padding:7px 10px;border-radius:5px;font-size:0.8rem;color:rgba(255,255,255,0.6);transition:var(--tr);margin-bottom:2px}
+.proposal-nav a:hover,.proposal-nav a.active{background:rgba(197,150,58,0.15);color:var(--gold2)}
+.proposal-nav a::before{content:'';width:4px;height:4px;border-radius:50%;background:currentColor;flex-shrink:0}
+/* password lock */
+.lock-overlay{position:relative}
+.lock-shield{position:absolute;inset:0;background:rgba(11,31,58,0.92);border-radius:var(--r);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;z-index:10;backdrop-filter:blur(4px)}
+.lock-shield .lock-icon{font-size:2.5rem}
+.lock-shield p{color:rgba(255,255,255,0.7);font-size:0.9rem;text-align:center;max-width:280px}
+.lock-input-row{display:flex;gap:0.5rem}
+.lock-input{padding:8px 14px;border-radius:6px;border:1px solid rgba(197,150,58,0.4);background:rgba(255,255,255,0.1);color:var(--white);font-size:0.88rem;font-family:'DM Mono',monospace;width:130px;text-align:center;letter-spacing:0.2em}
+.lock-input::placeholder{letter-spacing:0;color:rgba(255,255,255,0.35)}
+.lock-btn{padding:8px 16px;background:var(--gold);color:var(--navy);border:none;border-radius:6px;cursor:pointer;font-weight:600;font-size:0.82rem;transition:var(--tr)}
+.lock-btn:hover{background:var(--gold2)}
+.lock-error{font-size:0.78rem;color:#ff7875}
+.proposal-section{margin-bottom:2.5rem;scroll-margin-top:90px}
+.proposal-section h3{font-family:'Cormorant Garamond',serif;font-size:1.5rem;color:var(--navy);margin-bottom:0.9rem;padding-bottom:0.65rem;border-bottom:2px solid var(--cream2)}
+.proposal-section p{margin-bottom:0.8rem}
+.proposal-section ul{margin:0.65rem 0 0.65rem 1.5rem}
+.proposal-section ul li{margin-bottom:0.35rem;font-size:0.94rem;color:#344054}
+.proposal-phase{display:flex;gap:0.9rem;padding:1.1rem;background:var(--cream2);border-radius:var(--r);border-left:3px solid var(--gold);margin-bottom:0.9rem}
+.phase-num{width:34px;height:34px;border-radius:50%;background:var(--navy);color:var(--gold2);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:700;flex-shrink:0}
+.phase-body h5{font-family:'Cormorant Garamond',serif;font-size:0.98rem;margin-bottom:0.25rem}
+.phase-body p{font-size:0.84rem;color:var(--muted);margin:0}
+.info-box{background:linear-gradient(135deg,var(--navy) 0%,var(--navy3) 100%);border-radius:var(--r);padding:1.4rem;margin-top:1.25rem}
+.info-box p{color:rgba(255,255,255,0.75);font-size:0.86rem}
+.info-box strong{color:var(--gold2)}
+
+/* ── INSTITUTIONS ── */
+.inst-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4rem}
+.inst-card{padding:1.75rem;position:relative;overflow:hidden}
+.inst-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--gold2));transform:scaleX(0);transform-origin:left;transition:var(--tr)}
+.inst-card:hover::before{transform:scaleX(1)}
+.inst-flag{width:44px;height:30px;border-radius:4px;margin-bottom:0.9rem;display:flex;align-items:center;justify-content:center;font-size:1.4rem;background:var(--cream2)}
+.inst-role{font-family:'DM Mono',monospace;font-size:0.66rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold);margin-bottom:0.4rem}
+.inst-card h4{font-size:1.05rem;margin-bottom:0.3rem;color:var(--navy)}
+.inst-card .country{font-size:0.8rem;color:var(--muted);margin-bottom:0.65rem}
+.inst-card p{font-size:0.8rem;color:var(--muted);line-height:1.55}
+.inst-rep{margin-top:0.9rem;padding-top:0.9rem;border-top:1px solid var(--border);font-size:0.78rem}
+.inst-rep strong{color:var(--navy);display:block;margin-bottom:2px}
+.inst-rep span{color:var(--muted)}
+.inst-edit-btn{display:inline-flex;align-items:center;gap:5px;margin-top:0.65rem;font-size:0.73rem;color:var(--gold);border:1px solid rgba(197,150,58,0.3);padding:4px 9px;border-radius:4px;cursor:pointer;transition:var(--tr);background:none;font-family:'DM Sans',sans-serif}
+.inst-edit-btn:hover{background:rgba(197,150,58,0.08);border-color:var(--gold)}
+
+/* ── RESEARCHERS ── */
+.researchers-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1.4rem}
+.researcher-card{padding:1.6rem}
+.researcher-card.pi{border-color:var(--gold);background:linear-gradient(135deg,#fff 0%,rgba(197,150,58,0.04) 100%)}
+.r-avatar{width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--navy),var(--navy3));display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:1.2rem;color:var(--gold2);margin-bottom:0.9rem;font-weight:700;border:2px solid rgba(197,150,58,0.25)}
+.r-role-badge{display:inline-block;font-size:0.66rem;letter-spacing:0.1em;text-transform:uppercase;padding:3px 7px;border-radius:100px;margin-bottom:0.55rem;font-family:'DM Mono',monospace}
+.r-role-badge.pi-badge{background:#FFF3CD;color:#856404}
+.r-role-badge.co-badge{background:var(--cream2);color:var(--navy)}
+.researcher-card h4{font-size:0.97rem;color:var(--navy);margin-bottom:0.2rem}
+.researcher-card .r-title{font-size:0.78rem;color:var(--muted);margin-bottom:0.3rem}
+.researcher-card .r-inst{font-size:0.73rem;color:var(--gold);font-family:'DM Mono',monospace;letter-spacing:0.04em;margin-bottom:0.65rem}
+.r-expertise{display:flex;flex-wrap:wrap;gap:3px;margin-top:0.4rem}
+.r-tag{font-size:0.66rem;background:var(--cream2);color:var(--navy3);padding:2px 7px;border-radius:100px}
+/* edit members panel */
+.edit-members-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:6px;border:1px solid var(--border);background:var(--white);cursor:pointer;font-size:0.8rem;font-family:'DM Sans',sans-serif;color:var(--navy);transition:var(--tr);margin-bottom:1.5rem}
+.edit-members-btn:hover{background:var(--navy);color:var(--white);border-color:var(--navy)}
+
+/* ── CVs TAB ── */
+.cv-tabs{display:flex;gap:0.5rem;margin-bottom:1.5rem;flex-wrap:wrap}
+.cv-tab{padding:8px 18px;border-radius:6px;border:1px solid var(--border);background:var(--white);cursor:pointer;font-size:0.82rem;font-family:'DM Sans',sans-serif;color:var(--muted);transition:var(--tr)}
+.cv-tab.active,.cv-tab:hover{background:var(--navy);color:var(--white);border-color:var(--navy)}
+.cv-panel{display:none}
+.cv-panel.active{display:block}
+.cv-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:2rem}
+.cv-header{display:flex;align-items:flex-start;gap:1.5rem;margin-bottom:1.5rem;padding-bottom:1.5rem;border-bottom:2px solid var(--cream2)}
+.cv-avatar{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--navy),var(--navy3));display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:1.6rem;color:var(--gold2);font-weight:700;flex-shrink:0;border:2px solid rgba(197,150,58,0.3)}
+.cv-meta h3{font-size:1.4rem;color:var(--navy);margin-bottom:0.25rem}
+.cv-meta p{font-size:0.85rem;color:var(--muted);margin-bottom:0.2rem}
+.cv-section{margin-bottom:1.25rem}
+.cv-section h4{font-family:'Cormorant Garamond',serif;font-size:1.05rem;color:var(--navy);margin-bottom:0.5rem;padding-bottom:0.3rem;border-bottom:1px solid var(--cream2)}
+.cv-section ul{margin-left:1.25rem}
+.cv-section ul li{font-size:0.85rem;color:#344054;margin-bottom:0.3rem}
+.cv-section p{font-size:0.87rem;color:#344054}
+.add-cv-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:6px;border:1px dashed var(--border);background:transparent;cursor:pointer;font-size:0.8rem;font-family:'DM Sans',sans-serif;color:var(--muted);transition:var(--tr);margin-top:0.5rem}
+.add-cv-btn:hover{border-color:var(--gold);color:var(--gold);background:rgba(197,150,58,0.04)}
+
+/* ── OUTCOMES TABLE ── */
+.outcomes-filter{display:flex;flex-wrap:wrap;gap:0.45rem;margin-bottom:1.4rem}
+.filter-btn{font-size:0.73rem;padding:5px 13px;border-radius:100px;border:1px solid var(--border);background:var(--white);cursor:pointer;transition:var(--tr);font-family:'DM Sans',sans-serif;color:var(--text)}
+.filter-btn:hover,.filter-btn.active{background:var(--navy);color:var(--white);border-color:var(--navy)}
+.outcomes-table-wrap{overflow-x:auto;border-radius:var(--r);box-shadow:var(--shadow)}
+table{width:100%;border-collapse:collapse;background:var(--white);font-size:0.8rem}
+thead tr{background:var(--navy);color:var(--white)}
+thead th{padding:11px 13px;text-align:left;font-weight:600;font-size:0.7rem;letter-spacing:0.08em;text-transform:uppercase;white-space:nowrap}
+tbody tr{border-bottom:1px solid var(--border);transition:var(--tr)}
+tbody tr:hover{background:rgba(197,150,58,0.04)}
+tbody td{padding:10px 13px;vertical-align:middle}
+.badge{display:inline-block;font-size:0.66rem;padding:3px 7px;border-radius:100px;font-weight:600;letter-spacing:0.03em;white-space:nowrap}
+.badge-mand{background:var(--greenl);color:var(--green)}
+.badge-elec{background:var(--amberl);color:var(--amber)}
+.badge-q1{background:#E3F2FD;color:#1565C0}
+.badge-q2{background:#E8F5E9;color:#2E7D32}
+.badge-tech{background:#F3E5F5;color:#6A1B9A}
+.badge-fin{background:#E1F5FE;color:#01579B}
+.badge-doc{background:#FFF8E1;color:#F57F17}
+.badge-pub{background:#E8F5E9;color:#2E7D32}
+.badge-report{background:var(--cream2);color:var(--navy)}
+.tick{color:#16a34a;font-weight:700;font-size:1rem}
+.dash{color:var(--muted)}
+.sci-output{font-size:0.76rem;color:var(--navy3);font-style:italic}
+
+/* ── DELIVERABLES ── */
+.deliverables-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4rem}
+.deliv-card{padding:1.6rem;position:relative}
+.deliv-card .deliv-icon{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;margin-bottom:0.9rem}
+.deliv-card h4{font-size:1rem;margin-bottom:0.35rem;color:var(--navy)}
+.deliv-card p{font-size:0.8rem;color:var(--muted);line-height:1.55}
+.deliv-count{position:absolute;top:1.1rem;right:1.1rem;font-family:'Cormorant Garamond',serif;font-size:1.9rem;font-weight:700;color:var(--cream2);line-height:1}
+
+/* ── PRINT BUTTON ── */
+.print-section-bar{display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:1.5rem;align-items:center}
+.print-section-bar span{font-size:0.78rem;color:var(--muted);font-family:'DM Mono',monospace;letter-spacing:0.06em;text-transform:uppercase}
+.print-btn{display:inline-flex;align-items:center;gap:5px;font-size:0.74rem;padding:6px 13px;border-radius:4px;border:1px solid var(--border);background:var(--white);cursor:pointer;transition:var(--tr);font-family:'DM Sans',sans-serif;color:var(--navy)}
+.print-btn:hover{background:var(--navy);color:var(--white);border-color:var(--navy)}
+
+/* ── PROGRESS ── */
+.tracker-wrap{background:var(--white);border-radius:var(--r);padding:2rem;box-shadow:var(--shadow)}
+.tracker-year{margin-bottom:2rem}
+.tracker-year-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.9rem;padding-bottom:0.65rem;border-bottom:2px solid var(--cream2)}
+.tracker-year-hdr h4{font-family:'Cormorant Garamond',serif;font-size:1.15rem;color:var(--navy)}
+.progress-bar-wrap{background:var(--cream2);border-radius:100px;height:7px;margin-bottom:0.35rem;overflow:hidden}
+.progress-bar{height:100%;border-radius:100px;background:linear-gradient(90deg,var(--navy),var(--navy3));transition:width 1s ease}
+.progress-label{display:flex;justify-content:space-between;font-size:0.72rem;color:var(--muted);margin-bottom:0.9rem}
+.milestones-list{display:flex;flex-direction:column;gap:0.5rem}
+.milestone{display:flex;align-items:flex-start;gap:0.7rem;padding:0.65rem 0.9rem;border-radius:6px;font-size:0.83rem;transition:var(--tr)}
+.milestone:hover{background:var(--cream2)}
+.milestone-dot{width:20px;height:20px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:0.62rem;margin-top:2px}
+.milestone-dot.done{background:var(--greenl);color:var(--green)}
+.milestone-dot.pending{background:var(--amberl);color:var(--amber)}
+.milestone-dot.future{background:var(--cream2);color:var(--muted);border:1px solid var(--border)}
+.milestone-body{flex:1}
+.milestone-title{font-weight:600;color:var(--navy);margin-bottom:2px}
+.milestone-date{font-size:0.72rem;color:var(--muted);font-family:'DM Mono',monospace}
+.milestone-status{font-size:0.66rem;padding:2px 7px;border-radius:100px;align-self:center;white-space:nowrap}
+.status-done{background:var(--greenl);color:var(--green)}
+.status-pending{background:var(--amberl);color:var(--amber)}
+.status-upcoming{background:var(--cream2);color:var(--muted)}
+
+/* ── JOIN US / JOBS ── */
+.join-cta{display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg,var(--navy) 0%,var(--navy3) 100%);border-radius:var(--r);padding:2rem 2.5rem;margin-bottom:2rem;gap:1.5rem;flex-wrap:wrap;border:1px solid rgba(197,150,58,0.2)}
+.join-cta h3{font-family:'Cormorant Garamond',serif;color:var(--white);font-size:1.5rem;margin-bottom:0.3rem}
+.join-cta p{color:rgba(255,255,255,0.65);font-size:0.85rem;max-width:480px}
+.job-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.25rem}
+.job-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:1.5rem;transition:var(--tr)}
+.job-card:hover{box-shadow:var(--shadow);border-color:rgba(197,150,58,0.4);transform:translateY(-3px)}
+.job-type{font-family:'DM Mono',monospace;font-size:0.66rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--gold);margin-bottom:0.5rem}
+.job-card h4{font-size:1rem;color:var(--navy);margin-bottom:0.35rem}
+.job-card p{font-size:0.8rem;color:var(--muted);margin-bottom:0.75rem;line-height:1.55}
+.job-meta{display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.85rem}
+.job-tag{font-size:0.66rem;background:var(--cream2);color:var(--navy3);padding:2px 7px;border-radius:100px}
+.apply-btn{display:inline-flex;align-items:center;gap:5px;padding:7px 16px;background:var(--navy);color:var(--white);border:none;border-radius:5px;cursor:pointer;font-size:0.78rem;font-weight:600;transition:var(--tr);font-family:'DM Sans',sans-serif}
+.apply-btn:hover{background:var(--navy3);transform:translateY(-1px)}
+
+/* ── APPLICATION MODAL ── */
+.modal-overlay{position:fixed;inset:0;z-index:3000;background:rgba(11,31,58,0.75);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:var(--tr)}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--white);border-radius:var(--r);padding:2rem;width:min(560px,94vw);max-height:85vh;overflow-y:auto;box-shadow:var(--shadow2);transform:translateY(20px);transition:var(--tr)}
+.modal-overlay.open .modal{transform:translateY(0)}
+.modal-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.5rem}
+.modal-header h3{font-family:'Cormorant Garamond',serif;color:var(--navy);font-size:1.4rem;max-width:400px}
+.modal-close{background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--muted);transition:var(--tr);padding:4px}
+.modal-close:hover{color:var(--navy)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:0.75rem}
+.form-group{display:flex;flex-direction:column;gap:0.35rem;margin-bottom:0.75rem}
+.form-group label{font-size:0.78rem;font-weight:600;color:var(--navy)}
+.form-group input,.form-group textarea,.form-group select{padding:9px 13px;border:1px solid var(--border);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:0.86rem;background:var(--cream);transition:var(--tr);outline:none;color:var(--text)}
+.form-group input:focus,.form-group textarea:focus,.form-group select:focus{border-color:var(--navy);box-shadow:0 0 0 3px rgba(11,31,58,0.08)}
+.form-group textarea{resize:vertical;min-height:80px}
+.modal-actions{display:flex;gap:0.65rem;justify-content:flex-end;margin-top:1.25rem}
+.btn-sm{padding:8px 18px;font-size:0.8rem;border-radius:6px;font-family:'DM Sans',sans-serif;cursor:pointer;transition:var(--tr);border:1px solid transparent}
+.btn-save{background:var(--navy);color:var(--white)}
+.btn-save:hover{background:var(--navy3)}
+.btn-cancel{background:transparent;border-color:var(--border);color:var(--muted)}
+.btn-cancel:hover{background:var(--cream2)}
+.file-upload-area{border:2px dashed var(--border);border-radius:6px;padding:1rem;text-align:center;cursor:pointer;transition:var(--tr);background:var(--cream);font-size:0.82rem;color:var(--muted)}
+.file-upload-area:hover{border-color:var(--gold);color:var(--gold);background:rgba(197,150,58,0.04)}
+
+/* ── PUBLICATIONS ── */
+.pubs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.4rem}
+.pub-card{padding:1.4rem}
+.pub-type{font-family:'DM Mono',monospace;font-size:0.66rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--gold);margin-bottom:0.45rem}
+.pub-card h4{font-size:0.93rem;color:var(--navy);margin-bottom:0.35rem;line-height:1.4}
+.pub-authors{font-size:0.78rem;color:var(--muted);margin-bottom:0.3rem}
+.pub-venue{font-size:0.76rem;color:var(--navy3);font-style:italic}
+.pub-actions{display:flex;gap:0.45rem;margin-top:0.9rem}
+.pub-btn{font-size:0.7rem;padding:5px 11px;border-radius:4px;border:1px solid var(--border);cursor:pointer;transition:var(--tr);background:none;font-family:'DM Sans',sans-serif;color:var(--navy)}
+.pub-btn:hover{background:var(--navy);color:var(--white);border-color:var(--navy)}
+.pub-placeholder{border:2px dashed var(--border);background:var(--cream2);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem;border-radius:var(--r);color:var(--muted);font-size:0.82rem;gap:0.4rem}
+.pub-placeholder span{font-size:1.75rem;opacity:0.4}
+
+/* ── COMMENTS ── */
+.comment-form{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:1.75rem;margin-bottom:1.75rem}
+.comment-form h4{font-family:'Cormorant Garamond',serif;margin-bottom:1.1rem;color:var(--navy);font-size:1.15rem}
+.comments-list{display:flex;flex-direction:column;gap:0.9rem}
+.comment-item{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:1.15rem}
+.comment-header{display:flex;align-items:center;gap:0.65rem;margin-bottom:0.55rem}
+.c-avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--navy),var(--navy3));color:var(--gold2);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:0.87rem;font-weight:700;flex-shrink:0}
+.c-meta{flex:1}
+.c-name{font-size:0.85rem;font-weight:600;color:var(--navy)}
+.c-date{font-size:0.71rem;color:var(--muted);font-family:'DM Mono',monospace}
+.c-category{font-size:0.66rem;padding:2px 7px;border-radius:100px;background:var(--cream2);color:var(--navy)}
+.comment-text{font-size:0.85rem;color:#344054;line-height:1.65}
+
+/* ── BUDGET ── */
+.budget-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:start}
+.budget-bars{display:flex;flex-direction:column;gap:0.8rem}
+.bbar-row{display:flex;flex-direction:column;gap:0.25rem}
+.bbar-hdr{display:flex;justify-content:space-between;font-size:0.78rem}
+.bbar-hdr span:first-child{color:var(--text);font-weight:500}
+.bbar-hdr span:last-child{color:var(--gold);font-family:'DM Mono',monospace;font-weight:600}
+.bbar-track{background:var(--cream2);border-radius:100px;height:6px;overflow:hidden}
+.bbar-fill{height:100%;border-radius:100px;background:linear-gradient(90deg,var(--navy),var(--navy3))}
+.budget-summary{background:var(--navy);border-radius:var(--r);padding:1.75rem;color:var(--white)}
+.budget-summary h4{font-family:'Cormorant Garamond',serif;color:var(--gold2);margin-bottom:1.1rem;font-size:1.25rem}
+.budget-line{display:flex;justify-content:space-between;align-items:center;padding:0.55rem 0;border-bottom:1px solid rgba(255,255,255,0.08);font-size:0.83rem}
+.budget-line:last-child{border:none}
+.budget-line .bl-label{color:rgba(255,255,255,0.7)}
+.budget-line .bl-val{color:var(--gold2);font-family:'DM Mono',monospace;font-weight:600}
+.budget-total{margin-top:0.9rem;padding:0.9rem;background:rgba(197,150,58,0.12);border-radius:6px;display:flex;justify-content:space-between;align-items:center}
+.budget-total span:first-child{color:var(--white);font-weight:600;font-size:0.87rem}
+.budget-total span:last-child{color:var(--gold2);font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:700}
+
+/* ── GRANT GRID ── */
+.grant-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.1rem}
+.grant-item{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:var(--r);padding:1.1rem}
+.grant-item .g-label{font-family:'DM Mono',monospace;font-size:0.66rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold2);margin-bottom:0.35rem}
+.grant-item .g-val{font-size:0.88rem;color:var(--white);font-weight:500}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:2rem;right:2rem;z-index:9999;background:var(--navy);color:var(--white);padding:11px 18px;border-radius:7px;font-size:0.83rem;box-shadow:var(--shadow2);transform:translateY(80px);opacity:0;transition:all 0.3s ease;pointer-events:none;border-left:3px solid var(--gold)}
+.toast.show{transform:translateY(0);opacity:1}
+
+/* ── FOOTER ── */
+footer{background:var(--navy);color:rgba(255,255,255,0.55);padding:2.5rem 0;border-top:1px solid rgba(197,150,58,0.2)}
+.footer-inner{display:grid;grid-template-columns:2fr 1fr 1fr;gap:2.5rem;max-width:1200px;margin:0 auto;padding:0 2rem}
+footer h5{font-family:'Cormorant Garamond',serif;color:var(--white);margin-bottom:0.65rem;font-size:0.97rem}
+footer p,footer a{font-size:0.8rem;line-height:1.75}
+footer a:hover{color:var(--gold2)}
+.footer-bottom{max-width:1200px;margin:1.5rem auto 0;padding:1.25rem 2rem 0;border-top:1px solid rgba(255,255,255,0.08);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.75rem}
+.footer-bottom p{font-size:0.73rem}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  .intro-grid,.proposal-wrap,.inst-grid,.deliverables-grid,.budget-grid,.grant-grid,.form-row,.vision-grid{grid-template-columns:1fr}
+  .hero-stats{display:none}
+  .proposal-nav{position:static}
+  nav .nav-links{display:none;position:absolute;top:62px;left:0;right:0;background:var(--navy);padding:0.75rem;flex-direction:column;gap:0}
+  nav .nav-links.open{display:flex}
+  .nav-toggle{display:block}
+  .footer-inner{grid-template-columns:1fr}
+}
+@media(max-width:600px){
+  .researchers-grid{grid-template-columns:1fr}
+  .container{padding:0 1.2rem}
+  .section{padding:3.5rem 0}
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+[contenteditable]:focus{outline:2px dashed var(--gold);outline-offset:3px;border-radius:3px;background:rgba(197,150,58,0.04)}
+
+@media print{
+  nav,.pi-banner,.hero-stats,.hero-ctas,.inst-edit-btn,.print-section-bar,.join-us-section,.outcomes-filter,.edit-members-btn,.add-cv-btn,.apply-btn,.cv-tabs,.modal-overlay,.toast{display:none!important}
+  .section{padding:2rem 0}
+  body{background:white}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ NAV ═══ -->
+<nav id="main-nav">
+  <div class="nav-inner">
+    <div class="nav-brand">
+      <div class="nav-logo">IRT</div>
+      <span>IRT-in-CRI Study</span>
+    </div>
+    <div class="nav-links" id="nav-links">
+      <a href="#intro">About</a>
+      <a href="#vision2030">Vision 2030</a>
+      <a href="#proposal">Proposal</a>
+      <a href="#institutions">Institutions</a>
+      <a href="#researchers">Team</a>
+      <a href="#cvs">CVs</a>
+      <a href="#outcomes">Outcomes</a>
+      <a href="#progress">Progress</a>
+      <a href="#budget">Budget</a>
+      <a href="#publications">Outputs</a>
+      <a href="#join">Join Us</a>
+      <a href="#comments">Comments</a>
+    </div>
+    <button class="nav-toggle" id="nav-toggle"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<!-- ═══ PI BANNER ═══ -->
+<div class="pi-banner">
+  <div class="pi-banner-inner">
+    <span class="pi-label">Principal Investigator</span>
+    <span class="pi-name">Dr. Mahmoud Essam Elrggal</span>
+    <span class="pi-sep">|</span>
+    <span class="pi-title">Assistant Professor of Pharmacology & Toxicology · Umm Al-Qura University, Makkah, KSA</span>
+    <span class="pi-sep">|</span>
+    <span class="pi-title" style="font-family:'DM Mono',monospace;font-size:0.74rem;color:var(--gold2)">merggal@uqu.edu.sa</span>
+  </div>
+</div>
+
+<!-- ═══ HERO ═══ -->
+<section class="hero" id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="container">
+    <div class="hero-content">
+      <div class="hero-tag">Active Research Grant · Saudi NIH</div>
+      <h1>AI-Powered <em>Infrared Thermography</em><br>for Catheter Infection Detection</h1>
+      <p class="hero-sub">Leveraging deep learning and thermal imaging to detect catheter-related infections earlier, more accurately, and non-invasively — improving patient outcomes across Saudi hospitals.</p>
+      <div class="hero-meta">
+        <div class="hero-meta-item">📋 <strong>PRI01-2401-UQU21-46654875</strong></div>
+        <div class="hero-meta-item">⏱ Duration <strong>36 Months</strong></div>
+        <div class="hero-meta-item">💰 Budget <strong>SAR 1,977,420</strong></div>
+        <div class="hero-meta-item">🏛 Host <strong>Umm Al-Qura University</strong></div>
+        <div class="hero-meta-item">📅 Start <strong>November 2026</strong></div>
+      </div>
+      <div class="hero-ctas">
+        <a href="#proposal" class="btn btn-primary">Explore Proposal</a>
+        <a href="#outcomes" class="btn btn-outline">View Outcomes</a>
+        <a href="#join" class="btn btn-outline" style="border-color:var(--gold2);color:var(--gold2)">🎓 Join Us</a>
+      </div>
+    </div>
+  </div>
+  <div class="hero-stats">
+    <div class="stat"><div class="stat-num">3</div><div class="stat-label">Institutions</div></div>
+    <div class="stat-div"></div>
+    <div class="stat"><div class="stat-num">7</div><div class="stat-label">Researchers</div></div>
+    <div class="stat-div"></div>
+    <div class="stat"><div class="stat-num">3</div><div class="stat-label">Countries</div></div>
+    <div class="stat-div"></div>
+    <div class="stat"><div class="stat-num">36</div><div class="stat-label">Months</div></div>
+    <div class="stat-div"></div>
+    <div class="stat"><div class="stat-num">46</div><div class="stat-label">Deliverables</div></div>
+  </div>
+</section>
+
+<!-- ═══ ABOUT ═══ -->
+<section class="section" id="intro">
+  <div class="container">
+    <div class="sec-header"><div class="sec-tag">About the Project</div><h2>What is the IRT-in-CRI Study?</h2><div class="sec-line"></div></div>
+    <div class="intro-grid">
+      <div class="intro-text">
+        <p>Catheter-related infections (CRI) are among the most common and costly healthcare-associated infections worldwide, significantly increasing patient morbidity, mortality, length of hospital stay, and treatment costs.</p>
+        <p><strong>The IRT-in-CRI Study</strong> applies <strong>AI-powered infrared thermography</strong> — a non-invasive, radiation-free imaging modality — to detect thermal signatures of early infection at catheter insertion sites, before clinical signs appear.</p>
+        <p>Funded by the <strong>Saudi NIH</strong> under the Epidemics Research and Biotechnology Initiative, the project is hosted at <strong>Umm Al-Qura University</strong> and involves partner institutions in the UK and Germany. Project activities at the involved universities commence in <strong>November 2026</strong>.</p>
+        <div class="intro-highlight">
+          <p>"Our goal is to build a validated, deployable AI model that any hospital equipped with an infrared camera can use at the bedside — transforming infection surveillance from reactive to proactive."</p>
+          <cite>— Dr. Mahmoud Essam Elrggal, Principal Investigator</cite>
+        </div>
+      </div>
+      <div>
+        <div class="sec-tag" style="margin-bottom:1rem">Project Values</div>
+        <div class="values-grid">
+          <div class="value-card"><div class="value-icon">🎯</div><h5>Clinical Impact</h5><p>Reducing CRI-related morbidity through earlier, evidence-based point-of-care detection tools.</p></div>
+          <div class="value-card"><div class="value-icon">🤖</div><h5>AI Innovation</h5><p>Advancing deep learning diagnostics on real Saudi clinical thermal imaging data.</p></div>
+          <div class="value-card"><div class="value-icon">🌍</div><h5>Global Collaboration</h5><p>Uniting Saudi, UK, and German expertise across clinical, AI, and imaging domains.</p></div>
+          <div class="value-card"><div class="value-icon">🔬</div><h5>Scientific Integrity</h5><p>Highest standards of research ethics, data privacy, and transparent reporting.</p></div>
+          <div class="value-card"><div class="value-icon">🏥</div><h5>Patient Safety</h5><p>Non-invasive, radiation-free monitoring designed to complement clinical workflows.</p></div>
+          <div class="value-card"><div class="value-icon">📚</div><h5>Knowledge Transfer</h5><p>Disseminating findings through Q1 publications, conferences, and open science.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ VISION 2030 ═══ -->
+<section class="section section--dark" id="vision2030">
+  <div class="container">
+    <div class="sec-header">
+      <div class="sec-tag">National Alignment</div>
+      <h2>Value to the Kingdom & Vision 2030</h2>
+      <p>The IRT-in-CRI study directly supports Saudi Arabia's Vision 2030 healthcare transformation pillars and national research priorities.</p>
+      <div class="sec-line"></div>
+    </div>
+    <div class="vision-grid">
+      <div class="vision-card">
+        <div class="vision-pillar">Health Sector Reform</div>
+        <div class="vision-icon">🏥</div>
+        <h4>Advancing Healthcare Quality</h4>
+        <p>Directly reduces healthcare-associated infections — a key patient safety priority in Saudi hospitals under Vision 2030's health sector transformation agenda and the Saudi Patient Safety Center's national targets.</p>
+      </div>
+      <div class="vision-card">
+        <div class="vision-pillar">Innovation & R&D</div>
+        <div class="vision-icon">🤖</div>
+        <h4>AI-Driven Medical Innovation</h4>
+        <p>Contributes to Vision 2030's commitment to positioning the Kingdom as a global leader in science, technology, and innovation — building sovereign AI capabilities in clinical diagnostics developed by Saudi researchers.</p>
+      </div>
+      <div class="vision-card">
+        <div class="vision-pillar">Human Capital</div>
+        <div class="vision-icon">🎓</div>
+        <h4>Building Saudi Research Talent</h4>
+        <p>Trains and develops Saudi researchers, postdoctoral fellows, and research assistants in cutting-edge biomedical AI — directly advancing national human capital development goals.</p>
+      </div>
+      <div class="vision-card">
+        <div class="vision-pillar">Global Partnerships</div>
+        <div class="vision-icon">🌐</div>
+        <h4>International Academic Collaboration</h4>
+        <p>Establishes formal research partnerships between Saudi universities and leading global institutions (UK, Germany), advancing Vision 2030's international knowledge exchange objectives.</p>
+      </div>
+      <div class="vision-card">
+        <div class="vision-pillar">Digital Economy</div>
+        <div class="vision-icon">💡</div>
+        <h4>Digital Health Transformation</h4>
+        <p>Contributes a validated AI-powered digital health tool to Saudi Arabia's digital transformation roadmap — supporting the National Digital Health Strategy's goals for AI integration in healthcare.</p>
+      </div>
+      <div class="vision-card">
+        <div class="vision-pillar">Epidemic Preparedness</div>
+        <div class="vision-icon">🦠</div>
+        <h4>National Biosecurity & Epidemic Readiness</h4>
+        <p>Funded under Saudi NIH's Epidemics Research and Biotechnology Initiative, the study strengthens the Kingdom's infection surveillance infrastructure and biosecurity capabilities — a core Vision 2030 health resilience priority.</p>
+      </div>
+    </div>
+    <div style="margin-top:2rem;background:rgba(197,150,58,0.08);border:1px solid rgba(197,150,58,0.2);border-radius:var(--r);padding:1.5rem">
+      <p style="color:rgba(255,255,255,0.75);font-size:0.9rem;line-height:1.7"><strong style="color:var(--gold2)">Strategic Alignment:</strong> This project directly addresses at least two of the National Health Research, Development and Innovation Priorities as defined by the Saudi Research, Development and Innovation Authority (RDIA) — specifically in the domains of infectious disease control and AI-enabled diagnostics — qualifying it for reporting under the elective national priorities deliverable in the grant agreement (Annex 5).</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ PROPOSAL ═══ -->
+<section class="section section--alt" id="proposal">
+  <div class="container">
+    <div class="sec-header"><div class="sec-tag">Research Proposal</div><h2>Study Design & Methodology</h2><div class="sec-line"></div></div>
+    <div class="proposal-wrap">
+      <div class="proposal-nav">
+        <h4>Contents</h4>
+        <a href="#p-background" class="active">Background</a>
+        <a href="#p-objectives">Objectives</a>
+        <a href="#p-design" id="p-design-link">Study Design 🔒</a>
+        <a href="#p-phases">Project Phases</a>
+        <a href="#p-methodology" id="p-method-link">Methodology 🔒</a>
+        <a href="#p-significance">Significance</a>
+      </div>
+      <div>
+        <div class="proposal-section" id="p-background">
+          <h3>Background & Rationale</h3>
+          <p>Catheter-related infections contribute to significant patient morbidity and healthcare costs. Current diagnostic approaches rely on clinical signs and laboratory markers that become positive only after infection is established. Infrared thermography detects localised heat from inflammation — preceding visible signs by 24–72 hours. Despite its theoretical promise, IRT has not been rigorously validated for CRI detection.</p>
+          <div class="info-box"><p>Funded under the Saudi NIH <strong>Epidemics Research and Biotechnology Initiative</strong> — linking healthcare-associated infections to Saudi Arabia's pandemic preparedness and patient safety agenda.</p></div>
+        </div>
+
+        <div class="proposal-section" id="p-objectives">
+          <h3>Study Objectives</h3>
+          <ul>
+            <li>Assess sensitivity and specificity of AI-powered IRT for early CRI detection vs. standard clinical assessment and microbiology cultures.</li>
+            <li>Develop, train, and validate a deep learning model for automated IRT image classification.</li>
+            <li>Monitor thermal patterns in CRI patients receiving antimicrobial therapy — establishing IRT as a treatment monitoring tool.</li>
+            <li>Build a labelled IRT image dataset from Saudi clinical settings.</li>
+            <li>Produce high-impact Q1 publications and evidence-based recommendations for IRT adoption in Saudi infection control protocols.</li>
+          </ul>
+        </div>
+
+        <div class="proposal-section" id="p-design">
+          <h3>Study Design <span style="font-size:1rem;color:var(--gold)">🔒 Restricted</span></h3>
+          <div class="lock-overlay" id="lock-design">
+            <div style="background:var(--cream2);border-radius:var(--r);padding:2rem;border:1px solid var(--border)">
+              <p style="color:var(--muted);font-size:0.9rem;margin-bottom:0.5rem">Full study design content is available below after authentication.</p>
+            </div>
+            <div class="lock-shield" id="lock-shield-design">
+              <div class="lock-icon">🔐</div>
+              <p>This section contains the restricted study design protocol. Enter the access password to view.</p>
+              <div class="lock-input-row">
+                <input class="lock-input" type="password" id="pwd-design" placeholder="Password" onkeypress="if(event.key==='Enter') unlock('design')"/>
+                <button class="lock-btn" onclick="unlock('design')">Unlock</button>
+              </div>
+              <div class="lock-error" id="err-design" style="display:none">Incorrect password. Please try again.</div>
+            </div>
+            <div id="content-design" style="display:none;padding:1.5rem;background:var(--cream2);border-radius:var(--r)">
+              <p>The IRT-in-CRI study is a <strong>prospective, observational, multi-centre clinical study</strong> conducted at Umm Al-Qura University, Makkah. Adult patients (≥18 years) with indwelling vascular catheters will be recruited and followed for the duration of catheterisation.</p>
+              <p>Concurrent clinical assessments, microbiological cultures, and laboratory markers will serve as the reference standard. Infrared images are captured at enrolment and at pre-specified intervals. The AI model will be trained and validated using convolutional neural networks (CNNs) and transformer-based architectures.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="proposal-section" id="p-phases">
+          <h3>Project Phases</h3>
+          <div class="proposal-phase"><div class="phase-num">1</div><div class="phase-body"><h5>Phase 1 — Study Setup (Months 1–6)</h5><p>Study registration, team recruitment, contracts with participating sites, IRB approvals, equipment procurement, and training. University activities start November 2026.</p></div></div>
+          <div class="proposal-phase"><div class="phase-num">2</div><div class="phase-body"><h5>Phase 2 — Participant Recruitment (Months 4–18)</h5><p>Recruitment of eligible patients, eligibility assessment, informed consent, and database/imaging workflow establishment.</p></div></div>
+          <div class="proposal-phase"><div class="phase-num">3</div><div class="phase-body"><h5>Phase 3 — Data Collection (Months 6–30)</h5><p>Serial IRT image capture, microbiological sampling, clinical data collection, and AI model development.</p></div></div>
+          <div class="proposal-phase"><div class="phase-num">4</div><div class="phase-body"><h5>Phase 4 — Validation & Comparison (Months 24–34)</h5><p>AI model validation, benchmarking vs. standard diagnostics, subgroup analyses.</p></div></div>
+          <div class="proposal-phase"><div class="phase-num">5</div><div class="phase-body"><h5>Phase 5 — Reporting & Dissemination (Months 30–36)</h5><p>Manuscript preparation, conference presentations, final reports to Saudi NIH, project closure.</p></div></div>
+        </div>
+
+        <div class="proposal-section" id="p-methodology">
+          <h3>Methodology <span style="font-size:1rem;color:var(--gold)">🔒 Restricted</span></h3>
+          <div class="lock-overlay" id="lock-method">
+            <div style="background:var(--cream2);border-radius:var(--r);padding:2rem;border:1px solid var(--border)">
+              <p style="color:var(--muted);font-size:0.9rem;margin-bottom:0.5rem">Detailed methodology is restricted. Enter password to view.</p>
+            </div>
+            <div class="lock-shield" id="lock-shield-method">
+              <div class="lock-icon">🔐</div>
+              <p>This section contains the restricted research methodology. Enter the access password to view.</p>
+              <div class="lock-input-row">
+                <input class="lock-input" type="password" id="pwd-method" placeholder="Password" onkeypress="if(event.key==='Enter') unlock('method')"/>
+                <button class="lock-btn" onclick="unlock('method')">Unlock</button>
+              </div>
+              <div class="lock-error" id="err-method" style="display:none">Incorrect password. Please try again.</div>
+            </div>
+            <div id="content-method" style="display:none;padding:1.5rem;background:var(--cream2);border-radius:var(--r)">
+              <p><strong>Thermal Imaging:</strong> A calibrated mid-wave infrared camera captures images of catheter insertion sites under standardised conditions (ambient temperature, patient positioning, distance) at enrolment and pre-specified follow-up intervals.</p>
+              <p><strong>AI Model Development:</strong> CNNs (ResNet, EfficientNet) and vision transformers trained on the labelled thermal image dataset. Transfer learning employed to address dataset size constraints. Performance evaluated using AUC-ROC, sensitivity, specificity, PPV, and NPV.</p>
+              <p><strong>Data Management:</strong> All clinical and imaging data captured in REDCap, stored on secure institutional servers. AI analysis in Python (TensorFlow, PyTorch); statistical analysis in R/Stata.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="proposal-section" id="p-significance">
+          <h3>Expected Significance</h3>
+          <ul>
+            <li>First validated AI-powered IRT model for CRI detection in a Middle Eastern clinical setting.</li>
+            <li>A publicly available labelled thermal image dataset for CRI research.</li>
+            <li>Evidence base for updating Saudi clinical practice guidelines on CRI surveillance.</li>
+            <li>Minimum 3 peer-reviewed publications in Q1-indexed journals.</li>
+            <li>A scalable, cost-effective, radiation-free monitoring tool applicable to resource-limited settings.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ INSTITUTIONS ═══ -->
+<section class="section" id="institutions">
+  <div class="container">
+    <div class="sec-header"><div class="sec-tag">Partner Institutions</div><h2>Involved Institutions</h2><p>A tri-institutional collaboration spanning three countries.</p><div class="sec-line"></div></div>
+    <div class="inst-grid">
+      <div class="inst-card">
+        <div class="inst-flag">🇸🇦</div><div class="inst-role">Funding Body · Party 1</div>
+        <h4 contenteditable="true">Saudi National Institute of Health (Saudi NIH)</h4>
+        <div class="country" contenteditable="true">Riyadh, Kingdom of Saudi Arabia</div>
+        <p contenteditable="true">Governmental body responsible for overseeing transitional and clinical research, providing funding under the Epidemics Research and Biotechnology Initiative.</p>
+        <div class="inst-rep"><strong contenteditable="true">Prof. Faris bin Qa'ed Al-Anzi</strong><span contenteditable="true">Chief Executive Officer, Saudi NIH</span></div>
+        <button class="inst-edit-btn" onclick="showToast('Click any text to edit institution details')">✏ Edit</button>
+      </div>
+      <div class="inst-card">
+        <div class="inst-flag">🇸🇦</div><div class="inst-role">Host Institution · Party 2</div>
+        <h4 contenteditable="true">Umm Al-Qura University</h4>
+        <div class="country" contenteditable="true">Makkah, Kingdom of Saudi Arabia</div>
+        <p contenteditable="true">Host research institution responsible for administering the grant, supervising project execution, managing the research team, and overseeing all financial and ethical compliance.</p>
+        <div class="inst-rep"><strong contenteditable="true">Prof. Fahd Yahya Al-Zahrani</strong><span contenteditable="true">Vice-Rector for Graduate Studies & Scientific Research</span></div>
+        <button class="inst-edit-btn" onclick="showToast('Click any text to edit institution details')">✏ Edit</button>
+      </div>
+      <div class="inst-card">
+        <div class="inst-flag">🇬🇧</div><div class="inst-role">International Partner · Sub-grant</div>
+        <h4 contenteditable="true">Edinburgh Napier University</h4>
+        <div class="country" contenteditable="true">Edinburgh, United Kingdom</div>
+        <p contenteditable="true">Leads the AI and machine learning components via the CogBiD Research Lab. Brings expertise in deep learning, computational intelligence, and AI healthcare applications.</p>
+        <div class="inst-rep"><strong contenteditable="true">Prof. Amir Hussain</strong><span contenteditable="true">Professor of AI & Cognitive Robotics · Co-PI (AI)</span></div>
+        <button class="inst-edit-btn" onclick="showToast('Click any text to edit institution details')">✏ Edit</button>
+      </div>
+      <div class="inst-card">
+        <div class="inst-flag">🇩🇪</div><div class="inst-role">International Partner · Sub-grant</div>
+        <h4 contenteditable="true">Charité – Universitätsmedizin Berlin</h4>
+        <div class="country" contenteditable="true">Berlin, Germany</div>
+        <p contenteditable="true">Contributes expertise in medical imaging, machine learning, health data science, and biostatistics. Leads AI model development and data management components.</p>
+        <div class="inst-rep"><strong contenteditable="true">Dr. Mahmoud Mohamed (Lead) & Dr. Nader Aldoj</strong><span contenteditable="true">Co-Investigators — Health Data Science / ML</span></div>
+        <button class="inst-edit-btn" onclick="showToast('Click any text to edit institution details')">✏ Edit</button>
+      </div>
+      <div class="inst-card">
+        <div class="inst-flag">🤝</div><div class="inst-role">Collaborating Site</div>
+        <h4 contenteditable="true">UQU Medical Center — Al-Qunfudah Branch</h4>
+        <div class="country" contenteditable="true">Al-Qunfudah, Saudi Arabia</div>
+        <p contenteditable="true">Clinical data collection and microbiology laboratory work site. The team provides sample processing, clinical assessments, and compliance oversight.</p>
+        <div class="inst-rep"><strong contenteditable="true">Dr. Mohammed Abdullah Imam</strong><span contenteditable="true">Co-Investigator — Microbiology</span></div>
+        <button class="inst-edit-btn" onclick="showToast('Click any text to edit institution details')">✏ Edit</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ RESEARCHERS ═══ -->
+<section class="section section--alt" id="researchers">
+  <div class="container">
+    <div class="sec-header"><div class="sec-tag">Research Team</div><h2>Investigators & Team Members</h2><p>A multidisciplinary team spanning clinical pharmacy, AI, microbiology, radiology, and biostatistics.</p><div class="sec-line"></div></div>
+    <button class="edit-members-btn" onclick="openEditMembers()">👥 Edit Team Members</button>
+    <div class="researchers-grid" id="team-grid">
+      <div class="researcher-card pi">
+        <div class="r-avatar">ME</div>
+        <div class="r-role-badge pi-badge">Principal Investigator</div>
+        <h4>Dr. Mahmoud Essam Elrggal</h4>
+        <div class="r-title">Assistant Professor of Pharmacology & Toxicology</div>
+        <div class="r-inst">Umm Al-Qura University, KSA</div>
+        <p style="font-size:0.8rem;color:var(--muted)">Leads the overall project. Expert in infection control, antimicrobial stewardship, and AI in healthcare. 68+ publications. PMP certified.</p>
+        <div class="r-expertise"><span class="r-tag">Infection Control</span><span class="r-tag">Clinical Pharmacy</span><span class="r-tag">AI in Healthcare</span><span class="r-tag">PMP</span></div>
+      </div>
+      <div class="researcher-card">
+        <div class="r-avatar">AH</div>
+        <div class="r-role-badge co-badge">Co-PI — AI Team</div>
+        <h4>Prof. Amir Hussain</h4>
+        <div class="r-title">Professor of AI & Cognitive Robotics</div>
+        <div class="r-inst">Edinburgh Napier University, UK</div>
+        <p style="font-size:0.8rem;color:var(--muted)">Founding Director of CogBiD Lab. 600+ publications. Leads AI model development and machine learning architecture.</p>
+        <div class="r-expertise"><span class="r-tag">Deep Learning</span><span class="r-tag">Medical AI</span><span class="r-tag">5G-IoT</span></div>
+      </div>
+      <div class="researcher-card">
+        <div class="r-avatar">PB</div>
+        <div class="r-role-badge co-badge">Co-Investigator</div>
+        <h4>Prof. Peter Barlow</h4>
+        <div class="r-title">Chair of Immunology & Infection</div>
+        <div class="r-inst">Edinburgh Napier University, UK</div>
+        <p style="font-size:0.8rem;color:var(--muted)">Expert in host defence peptides and antimicrobial research. Fellow of the Royal Society of Biology. Leads microbiology components.</p>
+        <div class="r-expertise"><span class="r-tag">Immunology</span><span class="r-tag">Infection</span><span class="r-tag">Antimicrobials</span></div>
+      </div>
+      <div class="researcher-card">
+        <div class="r-avatar">MI</div>
+        <div class="r-role-badge co-badge">Co-Investigator</div>
+        <h4>Dr. Mohammed Abdullah Imam</h4>
+        <div class="r-title">Assistant Professor — Infection & Immunity</div>
+        <div class="r-inst">Umm Al-Qura University, KSA</div>
+        <p style="font-size:0.8rem;color:var(--muted)">PhD in Infection & Immunity (Leicester). Expert in bacteriophage therapy and clinical microbiology.</p>
+        <div class="r-expertise"><span class="r-tag">Microbiology</span><span class="r-tag">Phage Therapy</span><span class="r-tag">Lab Sciences</span></div>
+      </div>
+      <div class="researcher-card">
+        <div class="r-avatar">AA</div>
+        <div class="r-role-badge co-badge">Co-Investigator</div>
+        <h4>Dr. Abdulrahman I. AbuAqil</h4>
+        <div class="r-title">Senior Specialist in Radiology · Faculty Member</div>
+        <div class="r-inst">Umm Al-Qura University, KSA</div>
+        <p style="font-size:0.8rem;color:var(--muted)">PhD in Biomedical Engineering (UMass Lowell). Leads radiology imaging team. Expert in advanced radiological techniques.</p>
+        <div class="r-expertise"><span class="r-tag">Radiology</span><span class="r-tag">Biomedical Eng.</span><span class="r-tag">Imaging</span></div>
+      </div>
+      <div class="researcher-card">
+        <div class="r-avatar">MM</div>
+        <div class="r-role-badge co-badge">Co-Lead · Charité</div>
+        <h4>Dr. Mahmoud Mohamed</h4>
+        <div class="r-title">PhD in Health Data Science · Lead at Charité</div>
+        <div class="r-inst">Charité University, Berlin, Germany</div>
+        <p style="font-size:0.8rem;color:var(--muted)">Health data scientist and biostatistician. Co-leads Charité team. Expert in AI for cardiac imaging diagnostics and predictive modelling.</p>
+        <div class="r-expertise"><span class="r-tag">Biostatistics</span><span class="r-tag">Health Data Science</span><span class="r-tag">AI Diagnostics</span></div>
+      </div>
+      <div class="researcher-card">
+        <div class="r-avatar">NA</div>
+        <div class="r-role-badge co-badge">Co-Investigator · Charité</div>
+        <h4>Dr. Nader Aldoj</h4>
+        <div class="r-title">Machine Learning Engineer · Researcher</div>
+        <div class="r-inst">Charité University, Berlin, Germany</div>
+        <p style="font-size:0.8rem;color:var(--muted)">PhD in Machine Learning for Medical MRI (Charité). Expert in deep learning, CNN development, and medical imaging. Best Presenter ECR 2019.</p>
+        <div class="r-expertise"><span class="r-tag">Machine Learning</span><span class="r-tag">Medical Imaging</span><span class="r-tag">CNN / AI</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ CVs ═══ -->
+<section class="section" id="cvs">
+  <div class="container">
+    <div class="sec-header"><div class="sec-tag">Team Profiles</div><h2>Principal & Co-Investigator CVs</h2><p>Academic profiles and research backgrounds of the project investigators.</p><div class="sec-line"></div></div>
+    <div class="cv-tabs">
+      <button class="cv-tab active" onclick="showCV('pi',this)">Dr. Mahmoud Elrggal (PI)</button>
+      <button class="cv-tab" onclick="showCV('amir',this)">Prof. Amir Hussain</button>
+      <button class="cv-tab" onclick="showCV('peter',this)">Prof. Peter Barlow</button>
+      <button class="cv-tab" onclick="showCV('imam',this)">Dr. Mohammed Imam</button>
+      <button class="cv-tab" onclick="showCV('abdulrahman',this)">Dr. Abdulrahman AbuAqil</button>
+      <button class="cv-tab" onclick="showCV('mahmoud',this)">Dr. Mahmoud Mohamed</button>
+      <button class="cv-tab" onclick="showCV('nader',this)">Dr. Nader Aldoj</button>
+      <button class="add-cv-btn" onclick="showToast('Add Co-Investigator CV: use Edit Team Members to add a new researcher, then contact the admin to upload their CV.')">+ Add Co-Investigator</button>
+    </div>
+    <div class="cv-panel active" id="cv-pi">
+      <div class="cv-card">
+        <div class="cv-header">
+          <div class="cv-avatar">ME</div>
+          <div class="cv-meta">
+            <h3>Dr. Mahmoud Essam Elrggal</h3>
+            <p>Principal Investigator · Assistant Professor of Pharmacology & Toxicology</p>
+            <p>Umm Al-Qura University, Makkah, Saudi Arabia</p>
+            <p style="margin-top:0.3rem"><span style="font-family:'DM Mono',monospace;font-size:0.75rem;color:var(--gold)">merggal@uqu.edu.sa</span></p>
+          </div>
+        </div>
+        <div class="cv-section"><h4>Education</h4><ul><li>BSc Pharmaceutical Sciences — Alexandria University, 2005</li><li>Doctorate in Pharmacy Practice — Alexandria University, 2009</li><li>Diploma in Clinical Research — Harvard Medical School, 2012</li><li>PMP Certification — PMI, 2024</li></ul></div>
+        <div class="cv-section"><h4>Positions</h4><ul><li>Assistant Professor of Pharmacology & Toxicology, College of Medicine, UQU (2024–Present)</li><li>Assistant Professor of Pharmacy Practice, UQU (2013–2023)</li><li>Head of Biostatistics Consultation & Health Research Centre, UQU (2021–2023)</li><li>Senior Teaching Staff, Harvard T.H. Chan School of Public Health (2015–Present)</li><li>Visiting Professor, Strathclyde University, UK (2024)</li></ul></div>
+        <div class="cv-section"><h4>Key Publications</h4><ul><li>Antimicrobial Usage and Resistance in Makkah Region Hospitals — <em>Int. J. Environmental Research & Public Health</em>, 2021</li><li>Evaluation of Antimicrobial Stewardship Programs — <em>Saudi Pharmaceutical Journal</em>, 2020</li><li>Advancing Cancer Care with AI in Oncology Pharmacy — <em>Informatics in Medicine Unlocked</em>, 2024</li><li>Evaluate effectiveness of OPAT program in Saudi Arabia — <em>Antibiotics</em>, 2022</li></ul></div>
+        <div class="cv-section"><h4>Ongoing Grants</h4><ul><li>PI — Impact of COVID-19 on haemodialysis patients (MoE Saudi Arabia, SAR 100,000, 2022)</li><li>PI — Impact of intravenous point-of-care activation system (MoE Saudi Arabia, SAR 100,000, 2023)</li></ul></div>
+      </div>
+    </div>
+    <div class="cv-panel" id="cv-amir">
+      <div class="cv-card">
+        <div class="cv-header"><div class="cv-avatar">AH</div><div class="cv-meta"><h3>Prof. Amir Hussain</h3><p>Co-Principal Investigator (AI) · Professor of AI & Cognitive Robotics</p><p>Edinburgh Napier University, Edinburgh, UK</p></div></div>
+        <div class="cv-section"><h4>Education</h4><ul><li>B.Eng (First Class Hons with distinction) — University of Strathclyde, 1992</li><li>PhD in Engineering — University of Strathclyde, 1997</li></ul></div>
+        <div class="cv-section"><h4>Positions & Honours</h4><ul><li>Professor of AI & Cognitive Robotics, Edinburgh Napier University (Present)</li><li>Founding Director, CogBiD Research Lab, Edinburgh Napier University</li><li>General Chair, IEEE World Congress on Computational Intelligence (WCCI 2020)</li></ul></div>
+        <div class="cv-section"><h4>Research</h4><p>600+ publications. Lead PI on EPSRC Programme Grant "COG-MHEAR" (£4M). Innovate UK grant on AI fish health monitoring (£0.3M). Scottish Government COVID-19 AI dashboard (£0.14M).</p></div>
+      </div>
+    </div>
+    <div class="cv-panel" id="cv-peter">
+      <div class="cv-card">
+        <div class="cv-header"><div class="cv-avatar">PB</div><div class="cv-meta"><h3>Prof. Peter Barlow</h3><p>Co-Investigator · Chair of Immunology & Infection</p><p>Edinburgh Napier University, Edinburgh, UK</p></div></div>
+        <div class="cv-section"><h4>Education</h4><ul><li>B.Sc. (Hons) Biological Sciences — University of Strathclyde, 1998</li><li>PhD in Immunology — University of Edinburgh, 2003</li></ul></div>
+        <div class="cv-section"><h4>Honours</h4><ul><li>Elected Fellow, Royal Society of Biology</li><li>Fellow, Higher Education Academy</li><li>British Science Association Media Fellow</li><li>Award for Best Invited Presentation — Inflammation in Bacterial and Viral Infection Conference</li></ul></div>
+        <div class="cv-section"><h4>Research Focus</h4><p>Host defence peptides, antiviral therapeutics, infection immunology. Leads Chief Scientist Office Clinical Academic Fellowship Interview Panel.</p></div>
+      </div>
+    </div>
+    <div class="cv-panel" id="cv-imam">
+      <div class="cv-card">
+        <div class="cv-header"><div class="cv-avatar">MI</div><div class="cv-meta"><h3>Dr. Mohammed Abdullah Imam</h3><p>Co-Investigator · Assistant Professor, Infection & Immunity</p><p>Umm Al-Qura University, KSA</p></div></div>
+        <div class="cv-section"><h4>Education</h4><ul><li>BSc Applied Medical Sciences — King Abdulaziz University, 2008</li><li>MSc Infection & Immunity (Phage Therapy) — University of Leicester, 2015</li><li>PhD Infection & Immunity (Phage Therapy) — University of Leicester, 2020</li></ul></div>
+        <div class="cv-section"><h4>Positions</h4><ul><li>Assistant Professor, College of Medicine (Al-Qunfudah), UQU (2021–Present)</li><li>Co-founder, Phage in Arabic Platform (2021–Present)</li><li>External Collaborator, Centre of Phage Research, Leicester University (2022–Present)</li><li>SCFHS License: Senior Laboratory Technologist (Clinical Immunology) — No. 10-RT-0325122</li></ul></div>
+      </div>
+    </div>
+    <div class="cv-panel" id="cv-abdulrahman">
+      <div class="cv-card">
+        <div class="cv-header"><div class="cv-avatar">AA</div><div class="cv-meta"><h3>Dr. Abdulrahman I. AbuAqil</h3><p>Co-Investigator · Senior Specialist in Radiology</p><p>Umm Al-Qura University, KSA</p></div></div>
+        <div class="cv-section"><h4>Education</h4><ul><li>BSc Radiologic Sciences — University of South Alabama, 2016</li><li>MSc Radiologic Sciences (ICVT) — Thomas Jefferson University, 2018</li><li>PhD Biomedical Engineering & Biotechnology — University of Massachusetts Lowell, 2022</li></ul></div>
+        <div class="cv-section"><h4>Positions</h4><ul><li>Senior Specialist in Radiology, UQU (2022–Present)</li><li>Faculty Member, College of Medicine, UQU (2023–Present)</li></ul></div>
+        <div class="cv-section"><h4>Key Publications</h4><ul><li>Radiologist Assistant: Improving patient care in Saudi Arabia — <em>Saudi Journal of Radiology</em>, 2022</li><li>Hybrid Cardiac and Cardiovascular Operating Rooms — <em>JART</em>, 2022</li></ul></div>
+      </div>
+    </div>
+    <div class="cv-panel" id="cv-mahmoud">
+      <div class="cv-card">
+        <div class="cv-header"><div class="cv-avatar">MM</div><div class="cv-meta"><h3>Dr. Mahmoud Mohamed</h3><p>Co-Lead at Charité · PhD in Health Data Science</p><p>Charité – Universitätsmedizin, Berlin, Germany</p></div></div>
+        <div class="cv-section"><h4>Education</h4><ul><li>BSc Pharmaceutical Sciences — University of Alexandria, 2010</li><li>Diploma in Biostatistics & Bioinformatics — Medical Research Institute, Alexandria, 2014</li><li>PhD in Health Data Science — Charité – Universitätsmedizin, Berlin (Completed)</li></ul></div>
+        <div class="cv-section"><h4>Positions</h4><ul><li>PhD in Health Data Science, Charité Berlin (Completed)</li><li>Research Assistant, German Research Centre for AI, Berlin (2016–2019)</li><li>Student Assistant Biostatistician, Charité (2019–2020)</li><li>Management Committee Substitute, COST Action 18138 (2019–Present)</li></ul></div>
+        <div class="cv-section"><h4>Key Publications</h4><ul><li>Detection of extracardiac findings on coronary CTA vs. invasive angiography — <em>European Radiology</em>, 2022</li><li>Targeting host cell proteases for SARS-CoV-2 — <em>Pharmacology Research & Perspectives</em>, 2021</li></ul></div>
+      </div>
+    </div>
+    <div class="cv-panel" id="cv-nader">
+      <div class="cv-card">
+        <div class="cv-header"><div class="cv-avatar">NA</div><div class="cv-meta"><h3>Dr. Nader Aldoj</h3><p>Co-Investigator · Machine Learning Engineer</p><p>Charité University / Aignostics GmbH, Berlin, Germany</p></div></div>
+        <div class="cv-section"><h4>Education</h4><ul><li>Bachelor of Biomedical Engineering — Damascus University, 2014</li><li>MSc (CEMACUBE) — RWTH Aachen & Ghent University, 2016</li><li>PhD Machine Learning for Medical MRI — Charité, Berlin, 2020</li></ul></div>
+        <div class="cv-section"><h4>Honours</h4><ul><li>Best Presenter Award — European Congress of Radiology (ECR), 2019</li><li>Best Presenter Award — BIOQIC Days, 2018</li><li>DAAD Scholarship 2014; CEMACUBE Scholarship 2014</li></ul></div>
+        <div class="cv-section"><h4>Current Role</h4><p>Machine Learning Engineer at Aignostics GmbH (2020–Present), developing AI for high-resolution histology image analysis.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ OUTCOMES TABLE ═══ -->
+<section class="section" id="outcomes">
+  <div class="container">
+    <div class="sec-header"><div class="sec-tag">Grant Requirements</div><h2>Project Outcomes & Deliverables</h2><p>All 46 required and elective outcomes from the Saudi NIH grant agreement (Annex 5).</p><div class="sec-line"></div></div>
+    <div class="print-section-bar">
+      <span>Print Section:</span>
+      <button class="print-btn" onclick="printSection('outcomes')">🖨 Outcomes Table</button>
+      <button class="print-btn" onclick="printSection('progress')">🖨 Progress Tracker</button>
+      <button class="print-btn" onclick="printSection('budget')">🖨 Budget</button>
+      <button class="print-btn" onclick="printSection('publications')">🖨 Publications</button>
+      <button class="print-btn" onclick="window.print()">🖨 Full Page</button>
+    </div>
+    <div class="outcomes-filter">
+      <button class="filter-btn active" onclick="filterOutcomes('all',this)">All (46)</button>
+      <button class="filter-btn" onclick="filterOutcomes('mandatory',this)">Mandatory</button>
+      <button class="filter-btn" onclick="filterOutcomes('elective',this)">Elective</button>
+      <button class="filter-btn" onclick="filterOutcomes('publication',this)">Publications</button>
+      <button class="filter-btn" onclick="filterOutcomes('report',this)">Reports</button>
+      <button class="filter-btn" onclick="filterOutcomes('y1',this)">Year 1</button>
+      <button class="filter-btn" onclick="filterOutcomes('y2',this)">Year 2</button>
+      <button class="filter-btn" onclick="filterOutcomes('y3',this)">Year 3</button>
+    </div>
+    <div class="outcomes-table-wrap">
+      <table id="outcomes-table">
+        <thead>
+          <tr>
+            <th>#</th><th>Category</th><th>Outcome / Deliverable</th>
+            <th>Mandatory?</th><th>Output Type</th><th>Sub-type</th>
+            <th>Scientific Output</th>
+            <th>Count</th>
+            <th>Y1-M6</th><th>Y1-M12</th><th>Y2-M6</th><th>Y2-M12</th><th>Y3-M6</th><th>Y3-M12</th>
+          </tr>
+        </thead>
+        <tbody id="outcomes-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ DELIVERABLES ═══ -->
+<section class="section section--dark" id="deliverables">
+  <div class="container">
+    <div class="sec-header"><div class="sec-tag">Deliverable Summary</div><h2>Key Output Categories</h2><div class="sec-line"></div></div>
+    <div class="deliverables-grid">
+      <div class="deliv-card"><div class="deliv-count">6</div><div class="deliv-icon" style="background:rgba(197,150,58,0.15)">📊</div><h4>Technical Reports</h4><p>Semi-annual + annual reports submitted to Saudi NIH — 2 per year over 3 years.</p></div>
+      <div class="deliv-card"><div class="deliv-count">3</div><div class="deliv-icon" style="background:rgba(197,150,58,0.15)">💰</div><h4>Financial Reports</h4><p>Annual financial reports submitted at Month 12 each year.</p></div>
+      <div class="deliv-card"><div class="deliv-count">3</div><div class="deliv-icon" style="background:rgba(30,104,69,0.2)">📰</div><h4>Q1 Publications</h4><p>Three peer-reviewed Q1 journal articles required for project closure.</p></div>
+      <div class="deliv-card"><div class="deliv-count">1</div><div class="deliv-icon" style="background:rgba(1,87,155,0.15)">🎤</div><h4>Conference Abstract</h4><p>At least one poster/abstract at a peer-reviewed scientific conference.</p></div>
+      <div class="deliv-card"><div class="deliv-count">1</div><div class="deliv-icon" style="background:rgba(106,27,154,0.15)">🤖</div><h4>Validated AI Model</h4><p>A trained, validated deep learning model for CRI detection from IRT images.</p></div>
+      <div class="deliv-card"><div class="deliv-count">2+</div><div class="deliv-icon" style="background:rgba(197,150,58,0.15)">🤝</div><h4>Collaborations</h4><p>Formal collaborations with expert institutions and individuals — documented before closure.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ PROGRESS TRACKER ═══ -->
+<section class="section section--alt" id="progress">
+  <div class="container">
+    <div class="sec-header"><div class="sec-tag">Project Monitoring</div><h2>Progress Tracker</h2><p>Milestone tracking across all three project years. University activities start November 2026.</p><div class="sec-line"></div></div>
+    <div class="tracker-wrap">
+      <div class="tracker-year">
+        <div class="tracker-year-hdr"><h4>Year 1 — November 2026 to October 2027</h4><span id="y1-pct" style="font-family:'DM Mono',monospace;font-size:0.82rem;color:var(--gold)">0%</span></div>
+        <div class="progress-bar-wrap"><div class="progress-bar" style="width:0%"></div></div>
+        <div class="progress-label"><span>Start</span><span>M6 — Technical Report</span><span>M12 — Tech + Financial</span></div>
+        <div class="milestones-list">
+          <div class="milestone"><div class="milestone-dot done">✓</div><div class="milestone-body"><div class="milestone-title">Grant Agreement Signed</div><div class="milestone-date">25 June 2025</div></div><span class="milestone-status status-done">Complete</span></div>
+          <div class="milestone"><div class="milestone-dot done">✓</div><div class="milestone-body"><div class="milestone-title">Project Commencement Declaration Signed</div><div class="milestone-date">1 February 2025</div></div><span class="milestone-status status-done">Complete</span></div>
+          <div class="milestone"><div class="milestone-dot pending">⋯</div><div class="milestone-body"><div class="milestone-title">Ethics Approval Obtained & Submitted</div><div class="milestone-date">Due: Before Data Collection</div></div><span class="milestone-status status-pending">In Progress</span></div>
+          <div class="milestone"><div class="milestone-dot future">○</div><div class="milestone-body"><div class="milestone-title">University Activities Commence</div><div class="milestone-date">November 2026</div></div><span class="milestone-status status-upcoming">Upcoming</span></div>
+          <div class="milestone"><div class="milestone-dot future">○</div><div class="milestone-body"><div class="milestone-title">Equipment Procurement (IRT Camera)</div><div class="milestone-date">Due: Q1 2027</div></div><span class="milestone-status status-upcoming">Upcoming</span></div>
+          <div class="milestone"><div class="milestone-dot future">○</div><div class="milestone-body"><div class="milestone-title">Y1 Semi-annual Technical Report (M6)</div><div class="milestone-date">Due: April–May 2027</div></div><span class="milestone-status status-upcoming">Upcoming</span></div>
+          <div class="milestone"><div class="milestone-dot future">○</div><div class="milestone-body"><div class="milestone-title">Y1 Annual Technical + Financial Reports (M12)</div><div class="milestone-date">Due: October–November 2027</div></div><span class="milestone-status status-upcoming">Upcoming</span></div>
+        </div>
+      </div>
+      <div class="tracker-year">
+        <div class="tracker-year-hdr"><h4>Year 2 — November 2027 to October 2028</h4><span style="font-family:'DM Mono',monospace;font-size:0.82rem;color:var(--muted)">0%</span></div>
+        <div class="progress-bar-wrap"><div class="progress-bar" style="width:0%"></div></div>
+        <div class="progress-label"><span>Start</span><span>M6 — Technical Report</span><span>M12 — Tech + Financial</span></div>
+        <div class="milestones-list">
+          <div class="milestone"><div class="milestone-dot future">○</div><div class="milestone-body"><div class="milestone-title">Data Collection — Active Enrolment</div><div class="milestone-date">Months 6–18</div></div><span class="milestone-status status-upcoming">Upcoming</span></div>
+          <div class="milestone"><div class="milestone-dot future">○</div><div class="milestone-body"><div class="milestone-title">AI Model Training (Initial Dataset)</div><div class="milestone-date">Months 12–20</div></div><span class="milestone-status status-upcoming">Upcoming</span></div>
+          <div class="milestone"><div class="milestone-dot future">○</div><div class="milestone-body"><div class="milestone-title">First Q1 Publication Submission Target</div><div class="milestone-date">Target: Year 2</div></div><span class="milestone-status status-upcoming">Upcoming</span></div>
+          <div class="milestone"><div class="milestone-dot future">○</div><div class="milestone-body"><div class="milestone-title">Y2 Annual Technical + Financial Reports (M12)</div><div class="milestone-date">Due: October–November 2028</div></div><span class="milestone-status status-upcoming">Upcoming</span></div>
+        </div>
+      </div>
+      <div class="tracker-year">
+        <div class="tracker-year-hdr"><h4>Year 3 — November 2028 to October 2029</h4><span style="font-family:'DM Mono',monospace;font-size:0.82rem;color:var(--muted)">0%</span></div>
+        <div class="progress-bar-wrap"><div class="progress-bar" style="width:0%"></div></div>
+        <div class="progress-label"><span>Start</span><span>M6 — Conference Abstract</span><span>M12 — Project Closure</span></div>
+        <div class="milestones-list">
+          <div class="milestone"><div class="milestone-dot future">○</div><div class="milestone-body"><div class="milestone-title">AI Model Validation & Benchmarking</div><div class="milestone-date">Months 24–32</div></div><span class="milestone-status status-upcoming">Upcoming</span></div>
+          <div class="milestone"><div class="milestone-dot future">○</div><div class="milestone-body"><div class="milestone-title">3 × Q1 Publications — All Submitted / Accepted</div><div class="milestone-date">Due: Before Project Closure</div></div><span class="milestone-status status-upcoming">Upcoming</span></div>
+          <div class="milestone"><div class="milestone-dot future">○</div><div class="milestone-body"><div class="milestone-title">Conference Abstract / Poster Presented</div><div class="milestone-date">Due: Before Closure</div></div><span class="milestone-status status-upcoming">Upcoming</span></div>
+          <div class="milestone"><div class="milestone-dot future">○</div><div class="milestone-body"><div class="milestone-title">Final Technical + Financial Reports</div><div class="milestone-date">Due: October 2029</div></div><span class="milestone-status status-upcoming">Upcoming</span></div>
+          <div class="milestone"><div class="milestone-dot future">○</div><div class="milestone-body"><div class="milestone-title">Project Closure — Saudi NIH Review</div><div class="milestone-date">Late 2029</div></div><span class="milestone-status status-upcoming">Upcoming</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ BUDGET ═══ -->
+<section class="section section--mid" id="budget">
+  <div class="container">
+    <div class="sec-header"><div class="sec-tag">Financial Overview</div><h2>Budget Snapshot</h2><div class="sec-line"></div></div>
+    <div class="budget-grid">
+      <div>
+        <div class="budget-bars">
+          <div class="bbar-row"><div class="bbar-hdr"><span>Salaries & Incentives</span><span>SAR 727,000</span></div><div class="bbar-track"><div class="bbar-fill" style="width:36.8%"></div></div></div>
+          <div class="bbar-row"><div class="bbar-hdr"><span>Research Supplies (UQU)</span><span>SAR 590,000</span></div><div class="bbar-track"><div class="bbar-fill" style="width:29.8%"></div></div></div>
+          <div class="bbar-row"><div class="bbar-hdr"><span>Edinburgh Napier Sub-grant</span><span>SAR 486,000</span></div><div class="bbar-track"><div class="bbar-fill" style="width:24.6%"></div></div></div>
+          <div class="bbar-row"><div class="bbar-hdr"><span>Travel & Conferences</span><span>SAR 212,000</span></div><div class="bbar-track"><div class="bbar-fill" style="width:10.7%"></div></div></div>
+          <div class="bbar-row"><div class="bbar-hdr"><span>Publications & Other</span><span>SAR 144,000</span></div><div class="bbar-track"><div class="bbar-fill" style="width:7.3%"></div></div></div>
+          <div class="bbar-row"><div class="bbar-hdr"><span>Indirect Costs (6%)</span><span>SAR 84,420</span></div><div class="bbar-track"><div class="bbar-fill" style="width:4.3%"></div></div></div>
+        </div>
+        <div class="info-box" style="margin-top:1.25rem"><p>Budget transfers <strong>≤10%</strong> approved by UQU. Transfers <strong>&gt;10%</strong> require formal Saudi NIH amendment.</p></div>
+      </div>
+      <div class="budget-summary">
+        <h4>Budget by Year</h4>
+        <div class="budget-line"><span class="bl-label">Year 1</span><span class="bl-val">SAR ~850,000</span></div>
+        <div class="budget-line"><span class="bl-label">Year 2</span><span class="bl-val">SAR ~700,000</span></div>
+        <div class="budget-line"><span class="bl-label">Year 3</span><span class="bl-val">SAR ~427,420</span></div>
+        <div class="budget-total"><span>Total Approved Budget</span><span>SAR 1,977,420</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ GRANT DETAILS ═══ -->
+<section class="section section--dark" id="grant">
+  <div class="container">
+    <div class="sec-header"><div class="sec-tag">Grant Information</div><h2>Agreement Details</h2><div class="sec-line"></div></div>
+    <div class="grant-grid">
+      <div class="grant-item"><div class="g-label">Agreement Number</div><div class="g-val">PRI01-2401-UQU21-46654875</div></div>
+      <div class="grant-item"><div class="g-label">Framework Agreement</div><div class="g-val">FAG-UQU-021</div></div>
+      <div class="grant-item"><div class="g-label">Signing Date</div><div class="g-val">25 June 2025</div></div>
+      <div class="grant-item"><div class="g-label">University Start Date</div><div class="g-val">November 2026</div></div>
+      <div class="grant-item"><div class="g-label">Duration</div><div class="g-val">36 months</div></div>
+      <div class="grant-item"><div class="g-label">Total Grant Value</div><div class="g-val">SAR 1,977,420</div></div>
+      <div class="grant-item"><div class="g-label">Funding Initiative</div><div class="g-val">Epidemics Research & Biotechnology Initiative</div></div>
+      <div class="grant-item"><div class="g-label">Host Institution</div><div class="g-val">Umm Al-Qura University, Makkah, KSA</div></div>
+      <div class="grant-item"><div class="g-label">Saudi NIH Contact</div><div class="g-val">grants@snih.gov.sa</div></div>
+      <div class="grant-item"><div class="g-label">Science & Technology Unit</div><div class="g-val">stu@uqu.edu.sa</div></div>
+      <div class="grant-item"><div class="g-label">PI Contact</div><div class="g-val">merggal@uqu.edu.sa</div></div>
+      <div class="grant-item"><div class="g-label">IP Ownership</div><div class="g-val">Umm Al-Qura University (Art. 21)</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ PUBLICATIONS ═══ -->
+<section class="section" id="publications">
+  <div class="container">
+    <div class="sec-header"><div class="sec-tag">Outputs & Dissemination</div><h2>Publications, Reports & Demos</h2><div class="sec-line"></div></div>
+    <h3 style="font-size:1.3rem;margin-bottom:1.1rem;color:var(--navy)">Publications</h3>
+    <div class="pubs-grid" style="margin-bottom:2.5rem">
+      <div class="pub-placeholder"><span>📰</span><strong>Publication 1 — Pending</strong><p>Q1 article — to be added when submitted or accepted.</p></div>
+      <div class="pub-placeholder"><span>📰</span><strong>Publication 2 — Pending</strong><p>Q1 article — target Year 2.</p></div>
+      <div class="pub-placeholder"><span>📰</span><strong>Publication 3 — Pending</strong><p>Q1 article — target Year 3.</p></div>
+    </div>
+    <h3 style="font-size:1.3rem;margin-bottom:1.1rem;color:var(--navy)">Technical Reports</h3>
+    <div class="pubs-grid" style="margin-bottom:2.5rem">
+      <div class="pub-card"><div class="pub-type">Technical Report — Y1-M6</div><h4>Semi-Annual Progress Report</h4><div class="pub-authors">Elrggal M.E. et al.</div><div class="pub-venue">Due: April–May 2027</div><div class="pub-actions"><button class="pub-btn">📥 Upload</button><span class="badge badge-mand" style="font-size:0.66rem">Mandatory</span></div></div>
+      <div class="pub-placeholder"><span>📋</span><strong>Annual Report Y1-M12</strong><p>Due: October–November 2027. Technical + Financial.</p></div>
+      <div class="pub-placeholder"><span>📋</span><strong>Further Reports (4 remaining)</strong><p>6 technical + 3 financial over 36 months.</p></div>
+    </div>
+    <h3 style="font-size:1.3rem;margin-bottom:1.1rem;color:var(--navy)">Demos & Presentations</h3>
+    <div class="pubs-grid">
+      <div class="pub-placeholder"><span>🎤</span><strong>Conference Abstract — Pending</strong><p>1 mandatory poster/abstract required before closure.</p></div>
+      <div class="pub-placeholder"><span>🤖</span><strong>AI Model Demo</strong><p>Live demo of the IRT classification model — after validation.</p></div>
+      <div class="pub-placeholder"><span>📊</span><strong>Dataset Overview</strong><p>Summary of the IRT image dataset — after data collection.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ JOIN US ═══ -->
+<section class="section section--alt join-us-section" id="join">
+  <div class="container">
+    <div class="sec-header"><div class="sec-tag">Careers</div><h2>Join the IRT-in-CRI Team</h2><p>We are recruiting talented researchers to join this exciting multi-institutional project.</p><div class="sec-line"></div></div>
+    <div class="join-cta">
+      <div>
+        <h3>🎓 Open Positions — 7 Openings</h3>
+        <p>We are hiring Post-Doctoral Fellows, Research Assistants, and a Project Manager. Applications are reviewed on a rolling basis. Send your CV and cover letter to the PI and the Science & Technology Unit.</p>
+      </div>
+      <div style="display:flex;gap:0.75rem;flex-wrap:wrap">
+        <a href="mailto:merggal@uqu.edu.sa?subject=Application — IRT-in-CRI Study" class="btn btn-primary">📧 Email PI</a>
+        <a href="mailto:elrggalme@gmail.com?subject=Application — IRT-in-CRI Study" class="btn btn-outline" style="border-color:var(--gold2);color:var(--navy);background:var(--gold2)">📧 Gmail</a>
+      </div>
+    </div>
+    <div class="job-cards">
+      <div class="job-card">
+        <div class="job-type">Research Position · Part-time</div>
+        <h4>Post-Doctoral Research Fellow</h4>
+        <p>Support technical/clinical activities in biomedical engineering, medical imaging, clinical pharmacy, or microbiology. Part-time; not expected to lead the project independently.</p>
+        <div class="job-meta"><span class="job-tag">PhD Required</span><span class="job-tag">Part-time</span><span class="job-tag">36 months</span><span class="job-tag">UQU</span></div>
+        <button class="apply-btn" onclick="openApply('Post-Doctoral Research Fellow')">Apply Now →</button>
+      </div>
+      <div class="job-card">
+        <div class="job-type">Research Assistant · 2 Positions</div>
+        <h4>Research Assistant – Clinical Data Collection</h4>
+        <p>Recruit participants, obtain consent, capture IRT images at catheter sites, and document clinical data. Hospital-based role.</p>
+        <div class="job-meta"><span class="job-tag">BSc Health Sciences</span><span class="job-tag">SCFHS Licensed</span><span class="job-tag">24 months</span></div>
+        <button class="apply-btn" onclick="openApply('Research Assistant – Clinical Data Collection')">Apply Now →</button>
+      </div>
+      <div class="job-card">
+        <div class="job-type">Research Assistant · 1 Position</div>
+        <h4>Research Assistant – Microbiology Laboratory</h4>
+        <p>Process and analyse microbiological samples (catheter-tip cultures, blood cultures) and correlate findings with thermographic data.</p>
+        <div class="job-meta"><span class="job-tag">BSc Microbiology</span><span class="job-tag">SCFHS Licensed</span><span class="job-tag">36 months</span></div>
+        <button class="apply-btn" onclick="openApply('Research Assistant – Microbiology Laboratory')">Apply Now →</button>
+      </div>
+      <div class="job-card">
+        <div class="job-type">Research Assistant · 2 Positions</div>
+        <h4>Research Assistant – Data Management & Analysis</h4>
+        <p>Build and manage the study database, perform statistical analyses, and support AI model validation activities.</p>
+        <div class="job-meta"><span class="job-tag">BSc Data/Informatics</span><span class="job-tag">Python/R/SPSS</span><span class="job-tag">24 months</span></div>
+        <button class="apply-btn" onclick="openApply('Research Assistant – Data Management and Analysis')">Apply Now →</button>
+      </div>
+      <div class="job-card">
+        <div class="job-type">Management · 1 Position</div>
+        <h4>Project Manager</h4>
+        <p>Manage all administrative, financial, and operational coordination. Oversee budget of SAR 1,977,420 across three international partner institutions.</p>
+        <div class="job-meta"><span class="job-tag">PMP Required</span><span class="job-tag">English Proficient</span><span class="job-tag">36 months</span><span class="job-tag">2yr Exp.</span></div>
+        <button class="apply-btn" onclick="openApply('Project Manager')">Apply Now →</button>
+      </div>
+    </div>
+    <div style="margin-top:1.5rem;background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:1.25rem;font-size:0.84rem;color:var(--muted)">
+      <strong style="color:var(--navy)">📧 How to Apply:</strong> Click "Apply Now" to fill out the application form. Your application will be sent directly to <strong>merggal@uqu.edu.sa</strong> and <strong>elrggalme@gmail.com</strong>. You may also email directly with the subject line: <em>Application — [Position Name] — IRT-in-CRI Study</em>.
+    </div>
+  </div>
+</section>
+
+<!-- ═══ COMMENTS ═══ -->
+<section class="section" id="comments">
+  <div class="container">
+    <div class="sec-header"><div class="sec-tag">Team Communication</div><h2>Comments & Updates</h2><div class="sec-line"></div></div>
+    <div class="comment-form">
+      <h4>Add a Comment or Update</h4>
+      <div class="form-row">
+        <div class="form-group"><label>Your Name</label><input type="text" id="c-name" placeholder="Dr. / Prof. ..."/></div>
+        <div class="form-group"><label>Category</label><select id="c-cat"><option>General Update</option><option>Data Collection</option><option>Ethics & Compliance</option><option>Budget & Finance</option><option>Publication</option><option>Equipment</option><option>Team Coordination</option><option>Saudi NIH Communication</option><option>Risk / Issue</option></select></div>
+      </div>
+      <div class="form-group"><label>Comment</label><textarea id="c-text" placeholder="Add your update, question, or note here..."></textarea></div>
+      <button class="btn btn-primary" onclick="addComment()" style="font-size:0.83rem">Post Comment</button>
+    </div>
+    <div class="comments-list" id="comments-list">
+      <div class="comment-item">
+        <div class="comment-header"><div class="c-avatar">ME</div><div class="c-meta"><div class="c-name">Dr. Mahmoud Essam Elrggal</div><div class="c-date">25 Jun 2025 · 09:14</div></div><span class="c-category">General Update</span></div>
+        <div class="comment-text">Grant agreement signed with Saudi NIH. Ethics committee application being prepared. Equipment procurement for IRT thermal camera initiated. University activities scheduled to commence November 2026.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  <div class="footer-inner">
+    <div>
+      <h5>IRT-in-CRI Study</h5>
+      <p>AI-Powered Infrared Thermography for Early Detection and Treatment Monitoring of Catheter-Related Infections.</p>
+      <p style="margin-top:0.65rem">Funded by the Saudi National Institute of Health under the Epidemics Research and Biotechnology Initiative.</p>
+      <p style="margin-top:0.65rem;font-family:'DM Mono',sans-serif;font-size:0.7rem;opacity:0.55">Grant No.: PRI01-2401-UQU21-46654875</p>
+    </div>
+    <div>
+      <h5>Quick Links</h5>
+      <a href="#intro" style="display:block">About the Project</a>
+      <a href="#vision2030" style="display:block">Vision 2030</a>
+      <a href="#proposal" style="display:block">Research Proposal</a>
+      <a href="#institutions" style="display:block">Institutions</a>
+      <a href="#researchers" style="display:block">Research Team</a>
+      <a href="#cvs" style="display:block">CVs</a>
+      <a href="#outcomes" style="display:block">Outcomes</a>
+      <a href="#join" style="display:block">Join Us</a>
+    </div>
+    <div>
+      <h5>Contact</h5>
+      <p>Principal Investigator</p>
+      <a href="mailto:merggal@uqu.edu.sa">merggal@uqu.edu.sa</a>
+      <p style="margin-top:0.65rem">Saudi NIH Grants Office</p>
+      <a href="mailto:grants@snih.gov.sa">grants@snih.gov.sa</a>
+      <p style="margin-top:0.65rem">Science & Technology Unit — UQU</p>
+      <a href="mailto:stu@uqu.edu.sa">stu@uqu.edu.sa</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2025 IRT-in-CRI Study — Umm Al-Qura University. All rights reserved.</p>
+    <p style="font-family:'DM Mono',sans-serif;font-size:0.7rem;opacity:0.45">Internal project portal — editable content.</p>
+  </div>
+</footer>
+
+<!-- ═══ MODALS ═══ -->
+<div class="toast" id="toast"></div>
+
+<!-- Application Modal -->
+<div class="modal-overlay" id="apply-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="apply-modal-title">Apply — Position</h3>
+      <button class="modal-close" onclick="closeModal('apply-modal')">✕</button>
+    </div>
+    <p style="font-size:0.84rem;color:var(--muted);margin-bottom:1.25rem">Complete the form below. Your application will be sent to the PI and the project email.</p>
+    <div class="form-row">
+      <div class="form-group"><label>Full Name *</label><input type="text" id="app-name" placeholder="Your full name"/></div>
+      <div class="form-group"><label>Email Address *</label><input type="email" id="app-email" placeholder="your@email.com"/></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Phone Number</label><input type="tel" id="app-phone" placeholder="+966 ..."/></div>
+      <div class="form-group"><label>Nationality</label><input type="text" id="app-nat" placeholder="e.g. Saudi"/></div>
+    </div>
+    <div class="form-group"><label>Current Institution / Employer</label><input type="text" id="app-inst" placeholder="University / Hospital / Organisation"/></div>
+    <div class="form-group"><label>Highest Degree *</label><select id="app-deg"><option>BSc</option><option>MSc</option><option>PhD / Doctorate</option><option>Fellowship</option><option>Other</option></select></div>
+    <div class="form-group"><label>Relevant Experience & Skills</label><textarea id="app-exp" placeholder="Briefly describe your relevant experience, skills, and why you are applying for this position..."></textarea></div>
+    <div class="form-group"><label>CV / Resume (attach link or describe)</label><input type="text" id="app-cv" placeholder="Google Drive / Dropbox link to your CV, or describe your background"/></div>
+    <div class="form-group"><label>Cover Letter (optional)</label><textarea id="app-cover" placeholder="Optional: paste your cover letter or key highlights..."></textarea></div>
+    <div style="background:var(--cream2);border-radius:6px;padding:0.9rem;font-size:0.79rem;color:var(--muted);margin-bottom:1rem">
+      📧 Your application will be sent to <strong style="color:var(--navy)">merggal@uqu.edu.sa</strong> and <strong style="color:var(--navy)">elrggalme@gmail.com</strong>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-sm btn-cancel" onclick="closeModal('apply-modal')">Cancel</button>
+      <button class="btn-sm btn-save" onclick="submitApplication()">Submit Application →</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Members Modal -->
+<div class="modal-overlay" id="edit-members-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Edit Team Members</h3>
+      <button class="modal-close" onclick="closeModal('edit-members-modal')">✕</button>
+    </div>
+    <p style="font-size:0.84rem;color:var(--muted);margin-bottom:1.25rem">Update team member details or add a new member. Click on any name or text in the Team section to edit directly.</p>
+    <div class="form-group"><label>Action</label><select id="edit-action"><option>Edit Existing Member (click text on page)</option><option>Add New Team Member</option></select></div>
+    <div id="add-member-form" style="display:none">
+      <div class="form-row">
+        <div class="form-group"><label>Full Name *</label><input type="text" id="new-name" placeholder="Dr. / Prof. ..."/></div>
+        <div class="form-group"><label>Role</label><select id="new-role"><option>Co-Investigator</option><option>Postdoctoral Fellow</option><option>Research Assistant</option><option>Project Manager</option></select></div>
+      </div>
+      <div class="form-group"><label>Title / Position</label><input type="text" id="new-title" placeholder="Assistant Professor of ..."/></div>
+      <div class="form-group"><label>Institution</label><input type="text" id="new-inst" placeholder="University / Hospital"/></div>
+      <div class="form-group"><label>Email</label><input type="email" id="new-email" placeholder="email@institution.edu"/></div>
+      <div class="form-group"><label>Expertise (comma-separated)</label><input type="text" id="new-exp" placeholder="e.g. Microbiology, Immunology, Lab Sciences"/></div>
+      <div class="form-group"><label>Short Bio</label><textarea id="new-bio" placeholder="Brief description of research background and role in the project..."></textarea></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-sm btn-cancel" onclick="closeModal('edit-members-modal')">Cancel</button>
+      <button class="btn-sm btn-save" id="edit-member-save" onclick="saveMemberEdit()">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══ OUTCOMES DATA ══════════════════════════════════════════════════════════
+const sciOutputMap = {
+  "Q1 Journal":"Peer-reviewed article — Q1 indexed journal",
+  "Q2 Journal":"Peer-reviewed article — Q2 indexed journal",
+  "Top 10":"Article in top 10 journals in field",
+  "Top 5":"Article in top 5 journals in field",
+  "Full Book":"Authored peer-reviewed book",
+  "Book Chapter":"Chapter in peer-reviewed book",
+  "Q1 – Review":"Literature review — Q1 journal",
+  "Q2 – Review":"Literature review — Q2 journal",
+  "Conference Poster":"Accepted abstract/poster at conference",
+  "Oral":"Oral presentation at scientific conference",
+  "Patent":"Granted/licensed patent from IP office",
+  "Discovery":"New peer-reviewed medical discovery",
+  "Trademark":"Registered trademark",
+  "Award":"Award or prize certificate",
+  "—":"—",
+};
+
+const outcomesData = [
+  [1,"Supplies & Infra","Research Supplies Expenditure","Mandatory","Financial Report","—",3,"–","✓","–","✓","–","✓"],
+  [2,"Supplies & Infra","Infrastructure Expenditure","Mandatory","Financial Report","—",3,"–","✓","–","✓","–","✓"],
+  [3,"Salaries","Researchers & Assistants","Mandatory","Financial Report","—",3,"–","✓","–","✓","–","✓"],
+  [4,"Salaries","Postgraduate & Postdoc Researchers","Mandatory","Financial Report","—",3,"–","✓","–","✓","–","✓"],
+  [5,"Salaries","Expert Consultants","Mandatory","Financial Report","—",3,"–","✓","–","✓","–","✓"],
+  [6,"Collaboration","Research Collaboration (Institution)","Mandatory","Technical Report","—",1,"–","–","–","–","–","–"],
+  [7,"Collaboration","Research Collaboration (Individual)","Mandatory","Technical Report","—",1,"–","–","–","–","–","–"],
+  [8,"Collaboration","Partnership Agreements","Mandatory","Official Document","—",1,"–","–","–","–","–","–"],
+  [9,"Ethics","Ethical Approvals Obtained","Mandatory","Official Document","—",1,"–","–","–","–","–","–"],
+  [10,"Ethics","Compliance Confirmation","Mandatory","Official Letter","—",3,"–","–","–","–","–","–"],
+  [11,"Research Progress","Data Collection (Completion)","Mandatory","Technical Report","—",1,"–","–","–","–","–","✓"],
+  [12,"Research Progress","Data Storage","Mandatory","Technical Report","—",6,"–","✓","✓","✓","✓","✓"],
+  [13,"Research Progress","Data Processing","Mandatory","Technical Report","—",6,"–","✓","✓","✓","✓","✓"],
+  [14,"Research Progress","Data Analysis","Mandatory","Technical Report","—",6,"–","✓","✓","✓","✓","✓"],
+  [15,"Samples","Sample Collection (Completion)","Mandatory","Technical Report","—",1,"–","–","–","–","–","✓"],
+  [16,"Samples","Sample Analysis / Storage","Mandatory","Technical Report","—",6,"–","✓","✓","✓","✓","✓"],
+  [17,"Samples","Safe Disposal of Samples","Mandatory","Technical Report","—",6,"–","✓","✓","✓","✓","✓"],
+  [18,"Materials","Safe Disposal of Materials","Elective","Report","—","N/A","–","–","–","–","–","–"],
+  [19,"Materials","Equipment Maintenance","Elective","Report","—","N/A","–","–","–","–","–","–"],
+  [20,"Materials","Safe Disposal of Equipment","Elective","Report","—","N/A","–","–","–","–","–","–"],
+  [21,"Materials","Performance / Operational Records","Elective","Report","—","N/A","–","–","–","–","–","–"],
+  [22,"Publications","Q1 Journal Article","Mandatory","Publication","Q1 Journal",3,"–","–","–","–","✓","✓"],
+  [23,"Publications","Q2 Journal Article","Elective","Publication","Q2 Journal","N/A","–","–","–","–","–","–"],
+  [24,"Publications","Top 10 Journal Article","Elective","Publication","Top 10","N/A","–","–","–","–","–","–"],
+  [25,"Publications","Top 5 Journal Article","Elective","Publication","Top 5","N/A","–","–","–","–","–","–"],
+  [26,"Books","Peer-reviewed Book","Elective","Book","Full Book","N/A","–","–","–","–","–","–"],
+  [27,"Books","Chapter in Book","Elective","Book","Book Chapter","N/A","–","–","–","–","–","–"],
+  [28,"Lit. Reviews","Literature Review (Q1)","Elective","Publication","Q1 – Review","N/A","–","–","–","–","–","–"],
+  [29,"Lit. Reviews","Literature Review (Q2)","Elective","Publication","Q2 – Review","N/A","–","–","–","–","–","–"],
+  [30,"Conferences","Conference Abstract / Poster","Mandatory","Published Abstract","Conference Poster",1,"–","–","–","–","✓","–"],
+  [31,"Conferences","Oral Presentation","Elective","Report","Oral","N/A","–","–","–","–","–","–"],
+  [32,"Conferences","Conference (Educational)","Elective","Report","Attendance","N/A","–","–","–","–","–","–"],
+  [33,"Awards","Awards & Prizes","Elective","Official Document","Award","N/A","–","–","–","–","–","–"],
+  [34,"IP","Patent (Granted / Licensed)","Elective","Official Document","Patent","N/A","–","–","–","–","–","–"],
+  [35,"IP","New Medical Discovery","Elective","Official Document","Discovery","N/A","–","–","–","–","–","–"],
+  [36,"IP","Trademark Registration","Elective","Official Document","Trademark","N/A","–","–","–","–","–","–"],
+  [37,"Reports","Technical Reports (Semi-annual + Annual)","Mandatory","Technical Report","—",6,"✓","✓","✓","✓","✓","✓"],
+  [38,"Reports","Financial Reports (Annual)","Mandatory","Financial Report","—",3,"–","✓","–","✓","–","✓"],
+  [39,"Risk","Address Data/Analysis Delays","Elective","Technical Report","—","N/A","–","–","–","–","–","–"],
+  [40,"Risk","Address Recruitment Delays","Elective","Technical Report","—","N/A","–","–","–","–","–","–"],
+  [41,"Risk","Address Objective Delays","Elective","Technical Report","—","N/A","–","–","–","–","–","–"],
+  [42,"National Priorities","National Health R&D Priorities","Elective","Report","—","N/A","–","–","–","–","–","–"],
+  [43,"Project Phases","Project Phases Completion","Mandatory","Technical Report","—",1,"–","–","–","–","–","✓"],
+  [44,"Contracts","Contracted Services","Elective","Report","—","N/A","–","–","–","–","–","–"],
+  [45,"Health Impact","Clinical Guidelines Informed","Elective","Report","—","N/A","–","–","–","–","–","–"],
+  [46,"Health Impact","Health Policies Adopted","Elective","Report","—","N/A","–","–","–","–","–","–"],
+];
+
+const typeClasses={"Financial Report":"badge-fin","Technical Report":"badge-tech","Official Document":"badge-doc","Official Letter":"badge-doc","Publication":"badge-pub","Published Abstract":"badge-pub","Book":"badge-report","Report":"badge-report"};
+const subtypeClasses={"Q1 Journal":"badge-q1","Q2 Journal":"badge-q2","Q1 – Review":"badge-q1","Q2 – Review":"badge-q2"};
+
+function renderOutcomes(filter){
+  const tbody=document.getElementById('outcomes-tbody');
+  tbody.innerHTML='';
+  outcomesData.forEach(row=>{
+    const[num,cat,outcome,mand,otype,subtype,count,y1m6,y1m12,y2m6,y2m12,y3m6,y3m12]=row;
+    let show=true;
+    if(filter==='mandatory') show=mand==='Mandatory';
+    else if(filter==='elective') show=mand==='Elective';
+    else if(filter==='publication') show=otype.toLowerCase().includes('publ')||otype.toLowerCase().includes('book');
+    else if(filter==='report') show=otype.toLowerCase().includes('report');
+    else if(filter==='y1') show=y1m6==='✓'||y1m12==='✓';
+    else if(filter==='y2') show=y2m6==='✓'||y2m12==='✓';
+    else if(filter==='y3') show=y3m6==='✓'||y3m12==='✓';
+    if(!show) return;
+    const sciOut=sciOutputMap[subtype]||sciOutputMap[otype]||'—';
+    const mandBadge=mand==='Mandatory'?'<span class="badge badge-mand">Mandatory</span>':'<span class="badge badge-elec">Elective</span>';
+    const typeBadge=`<span class="badge ${typeClasses[otype]||'badge-report'}">${otype}</span>`;
+    const subBadge=subtype==='—'?'<span style="color:var(--muted)">—</span>':`<span class="badge ${subtypeClasses[subtype]||'badge-report'}">${subtype}</span>`;
+    const rc=v=>v==='✓'?'<span class="tick">✓</span>':'<span class="dash">—</span>';
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td style="text-align:center;font-family:'DM Mono',monospace;font-size:0.78rem;color:var(--muted)">${num}</td>
+      <td><span style="font-size:0.76rem;color:var(--navy3);font-weight:500">${cat}</span></td>
+      <td style="font-weight:500;color:var(--navy);font-size:0.84rem">${outcome}</td>
+      <td>${mandBadge}</td>
+      <td>${typeBadge}</td>
+      <td>${subBadge}</td>
+      <td><span class="sci-output">${sciOut}</span></td>
+      <td style="text-align:center;font-family:'DM Mono',monospace;font-size:0.8rem">${count}</td>
+      <td style="text-align:center">${rc(y1m6)}</td>
+      <td style="text-align:center">${rc(y1m12)}</td>
+      <td style="text-align:center">${rc(y2m6)}</td>
+      <td style="text-align:center">${rc(y2m12)}</td>
+      <td style="text-align:center">${rc(y3m6)}</td>
+      <td style="text-align:center">${rc(y3m12)}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+function filterOutcomes(filter,btn){
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderOutcomes(filter);
+}
+renderOutcomes('all');
+
+// ══ PASSWORD LOCK ══════════════════════════════════════════════════════════
+const PASS='1234';
+function unlock(which){
+  const pwd=document.getElementById('pwd-'+which).value;
+  if(pwd===PASS){
+    document.getElementById('lock-shield-'+which).style.display='none';
+    document.getElementById('content-'+which).style.display='block';
+    showToast('Section unlocked successfully');
+  } else {
+    document.getElementById('err-'+which).style.display='block';
+    setTimeout(()=>document.getElementById('err-'+which).style.display='none',3000);
+  }
+}
+
+// ══ CV TABS ════════════════════════════════════════════════════════════════
+function showCV(id,btn){
+  document.querySelectorAll('.cv-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.cv-tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('cv-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ══ MODALS ═════════════════════════════════════════════════════════════════
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+document.querySelectorAll('.modal-overlay').forEach(m=>{
+  m.addEventListener('click',e=>{if(e.target===m) m.classList.remove('open')});
+});
+
+// ══ APPLY ══════════════════════════════════════════════════════════════════
+let currentJob='';
+function openApply(jobTitle){
+  currentJob=jobTitle;
+  document.getElementById('apply-modal-title').textContent='Apply — '+jobTitle;
+  document.getElementById('apply-modal').classList.add('open');
+}
+
+function submitApplication(){
+  const name=document.getElementById('app-name').value.trim();
+  const email=document.getElementById('app-email').value.trim();
+  if(!name||!email){showToast('Please fill in your name and email');return;}
+  const pos=currentJob;
+  const exp=document.getElementById('app-exp').value.trim();
+  const cv=document.getElementById('app-cv').value.trim();
+  const cover=document.getElementById('app-cover').value.trim();
+  const body=`Application for: ${pos}%0D%0AName: ${name}%0D%0AEmail: ${email}%0D%0AExperience: ${exp}%0D%0ACV: ${cv}%0D%0ACover Letter: ${cover}`;
+  const subject=`Application — ${pos} — IRT-in-CRI Study`;
+  window.location.href=`mailto:merggal@uqu.edu.sa,elrggalme@gmail.com?subject=${encodeURIComponent(subject)}&body=${body}`;
+  closeModal('apply-modal');
+  showToast('Opening email client with your application...');
+}
+
+// ══ EDIT MEMBERS ═══════════════════════════════════════════════════════════
+function openEditMembers(){document.getElementById('edit-members-modal').classList.add('open')}
+document.getElementById('edit-action').addEventListener('change',function(){
+  document.getElementById('add-member-form').style.display=this.value.includes('Add')?'block':'none';
+  document.getElementById('edit-member-save').textContent=this.value.includes('Add')?'Add Member':'Done';
+});
+
+function saveMemberEdit(){
+  const action=document.getElementById('edit-action').value;
+  if(action.includes('Add')){
+    const name=document.getElementById('new-name').value.trim();
+    if(!name){showToast('Please enter a name');return;}
+    const role=document.getElementById('new-role').value;
+    const title=document.getElementById('new-title').value.trim();
+    const inst=document.getElementById('new-inst').value.trim();
+    const exp=document.getElementById('new-exp').value.trim();
+    const bio=document.getElementById('new-bio').value.trim();
+    const initials=name.split(' ').filter(w=>w).map(w=>w[0]).join('').toUpperCase().slice(0,2);
+    const tags=exp.split(',').map(t=>`<span class="r-tag">${t.trim()}</span>`).join('');
+    const card=document.createElement('div');
+    card.className='researcher-card';
+    card.innerHTML=`<div class="r-avatar">${initials}</div><div class="r-role-badge co-badge">${role}</div><h4>${name}</h4><div class="r-title">${title}</div><div class="r-inst">${inst}</div><p style="font-size:0.8rem;color:var(--muted)">${bio}</p><div class="r-expertise">${tags}</div>`;
+    document.getElementById('team-grid').appendChild(card);
+    showToast(`${name} added to team`);
+  }
+  closeModal('edit-members-modal');
+}
+
+// ══ COMMENTS ═══════════════════════════════════════════════════════════════
+function addComment(){
+  const name=document.getElementById('c-name').value.trim();
+  const cat=document.getElementById('c-cat').value;
+  const text=document.getElementById('c-text').value.trim();
+  if(!name||!text){showToast('Please enter your name and a comment');return;}
+  const initials=name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+  const now=new Date();
+  const dateStr=now.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})+' · '+now.toTimeString().slice(0,5);
+  const div=document.createElement('div');
+  div.className='comment-item';
+  div.innerHTML=`<div class="comment-header"><div class="c-avatar">${initials}</div><div class="c-meta"><div class="c-name">${name}</div><div class="c-date">${dateStr}</div></div><span class="c-category">${cat}</span></div><div class="comment-text">${text}</div>`;
+  document.getElementById('comments-list').prepend(div);
+  document.getElementById('c-name').value='';document.getElementById('c-text').value='';
+  showToast('Comment posted');
+}
+
+// ══ TOAST ══════════════════════════════════════════════════════════════════
+function showToast(msg){
+  const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+// ══ PRINT SECTION ══════════════════════════════════════════════════════════
+function printSection(sectionId){
+  const el=document.getElementById(sectionId);
+  if(!el){window.print();return;}
+  const orig=document.body.innerHTML;
+  const content=el.outerHTML;
+  document.body.innerHTML=`<html><head><title>IRT-in-CRI — Print</title><style>body{font-family:Arial,sans-serif;padding:2rem}h2,h3,h4{color:#0B1F3A}table{width:100%;border-collapse:collapse;font-size:0.8rem}th,td{border:1px solid #ddd;padding:8px;text-align:left}th{background:#0B1F3A;color:white}</style></head><body>${content}</body></html>`;
+  window.print();
+  document.body.innerHTML=orig;
+  location.reload();
+}
+
+// ══ NAV ════════════════════════════════════════════════════════════════════
+document.getElementById('nav-toggle').addEventListener('click',()=>{
+  document.getElementById('nav-links').classList.toggle('open');
+});
+const sections=document.querySelectorAll('section[id]');
+const navLinks=document.querySelectorAll('.nav-links a');
+window.addEventListener('scroll',()=>{
+  let cur='';
+  sections.forEach(s=>{if(window.scrollY>=s.offsetTop-80) cur=s.id;});
+  navLinks.forEach(a=>{a.classList.toggle('active',a.getAttribute('href')==='#'+cur);});
+});
+navLinks.forEach(a=>{a.addEventListener('click',()=>{document.getElementById('nav-links').classList.remove('open');});});
+
+// Proposal nav
+document.querySelectorAll('.proposal-nav a').forEach(a=>{
+  a.addEventListener('click',()=>{document.querySelectorAll('.proposal-nav a').forEach(l=>l.classList.remove('active'));a.classList.add('active');});
+});
+
+// Contenteditable save hint
+document.querySelectorAll('[contenteditable=true]').forEach(el=>{
+  el.addEventListener('blur',()=>showToast('Change saved — remember to backup this page'));
+});
+
+// Fade in on scroll
+const fadeEls=document.querySelectorAll('.value-card,.inst-card,.researcher-card,.deliv-card,.pub-card,.job-card,.vision-card');
+const io=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.style.opacity='1';e.target.style.transform='translateY(0)'}});},{threshold:0.08});
+fadeEls.forEach(el=>{el.style.opacity='0';el.style.transform='translateY(18px)';el.style.transition='opacity 0.5s ease,transform 0.5s ease,box-shadow 0.28s ease,border-color 0.28s ease';io.observe(el);});
+</script>
+</body>
+</html>
